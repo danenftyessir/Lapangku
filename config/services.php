@@ -35,4 +35,16 @@ return [
         ],
     ],
 
+    'claude' => [
+        'api_key' => env('CLAUDE_API_KEY'),
+        'api_url' => env('CLAUDE_API_URL', 'https://api.anthropic.com/v1/messages'),
+        'model_sonnet' => 'claude-3-5-sonnet-20241022',
+        'model_haiku' => 'claude-3-haiku-20240307',
+    ],
+
+    'cohere' => [
+        'api_key' => env('COHERE_API_KEY'),
+        'api_url' => env('COHERE_API_URL', 'https://api.cohere.ai'),
+    ],
+
 ];

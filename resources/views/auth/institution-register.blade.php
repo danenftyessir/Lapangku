@@ -8,19 +8,17 @@
     <title>Daftar Sebagai Instansi - KKN-GO</title>
     
     @vite(['resources/css/app.css'])
-    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/auth-institution.css') }}">
     
     {{-- tambahkan Alpine.js CDN untuk membuat dropdown dinamis bekerja --}}
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
     
     <style>
-        /* background image dengan opacity yang lebih tinggi */
+        /* background image dengan opacity */
         .register-container.institution-register {
             position: relative;
             min-height: 100vh;
         }
-        
+
         .register-container.institution-register::before {
             content: '';
             position: fixed;
@@ -36,173 +34,275 @@
             z-index: 0;
             pointer-events: none;
         }
-        
+
         .register-container.institution-register > * {
             position: relative;
             z-index: 1;
         }
-        
-        /* MODERN STEP INDICATOR - Minimalist Glass Effect */
-        .step-indicator {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 1.5rem 1.5rem;
-            border-radius: 1rem 1rem 0 0;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+
+        /* Form Styling */
+        .form-field-group {
+            margin-bottom: 1.5rem;
         }
-        
-        /* Modern Step Numbers */
-        .step-number-wrapper {
-            width: 2.5rem;
-            height: 2.5rem;
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-label.required::after {
+            content: ' *';
+            color: #ef4444;
+        }
+
+        .form-input-wrapper {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            padding-right: 2.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.9375rem;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #1f2937;
+            ring: 2px;
+            ring-color: rgba(31, 41, 55, 0.3);
+            box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.1);
+        }
+
+        .form-input-icon {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #9ca3af;
+            pointer-events: none;
+        }
+
+        .error-message {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #ef4444;
+        }
+
+        .error-message.hidden {
+            display: none;
+        }
+
+        .error-message svg {
+            width: 1rem;
+            height: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* Step Indicator */
+        .step-indicator-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 3rem;
+            height: 3rem;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            border: 2px solid rgba(156, 163, 175, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
+            font-weight: 600;
+            font-size: 1.125rem;
+            transition: all 0.3s;
+            border: 2px solid #d1d5db;
+            background: white;
+            color: #9ca3af;
         }
-        
-        .step.active .step-number-wrapper {
-            background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+
+        .step-circle.active {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
             border-color: transparent;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            color: white;
+            box-shadow: 0 4px 12px rgba(31, 41, 55, 0.4);
             transform: scale(1.1);
         }
-        
-        .step.completed .step-number-wrapper {
-            background: #10b981;
+
+        .step-circle.completed {
+            background: #1f2937;
             border-color: transparent;
-        }
-        
-        .step-number {
-            color: #6B7280;
-            font-weight: 600;
-            font-size: 0.875rem;
-        }
-        
-        .step.active .step-number,
-        .step.completed .step-number {
             color: white;
         }
-        
-        /* Modern Step Labels */
-        .step-label {
-            color: #6B7280 !important;
-            font-weight: 500;
-            font-size: 0.75rem;
-            margin-top: 0.5rem;
-            transition: all 0.3s ease;
+
+        .step-circle.inactive {
+            background: #f3f4f6;
+            border-color: #e5e7eb;
+            color: #9ca3af;
         }
-        
-        .step.active .step-label {
-            color: #10b981 !important;
+
+        .step-number {
             font-weight: 600;
         }
-        
-        /* Step Track Line - PERBAIKAN: Presisi pas dengan lingkaran step */
-        .step-track {
-            position: absolute;
-            top: 1.25rem; /* 2.5rem (height circle) / 2 = 1.25rem */
-            left: calc(25% + 1.25rem);
-            right: calc(25% + 1.25rem);
+
+        .step-label {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        .step-item .step-circle.active ~ .step-label,
+        .step-circle.active + .step-label {
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .step-connector {
+            flex: 1;
             height: 2px;
-            background: rgba(156, 163, 175, 0.2);
-            z-index: 0;
-        }
-        
-        /* Container step indicator */
-        .step-indicator > div:last-child {
+            background: #e5e7eb;
+            margin: 0 0.5rem;
             position: relative;
+            top: -1.5rem;
         }
-        
-        /* Individual step positioning */
-        .step {
-            position: relative;
-            z-index: 1;
+
+        .step-connector.completed {
+            background: #1f2937;
         }
-        
-        /* GLASS MORPHISM CARD */
-        .register-card {
-            background: rgba(255, 255, 255, 0.25) !important;
-            backdrop-filter: blur(30px) saturate(180%);
-            -webkit-backdrop-filter: blur(30px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
-        }
-        
-        /* Form content background - opacity lebih rendah */
-        .register-card .p-8 {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(10px);
-            border-radius: 0 0 1rem 1rem;
-        }
-        
-        /* step content title */
-        .step-content h2 {
-            color: #1F2937;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-        
-        .step-content p {
-            color: #4B5563;
-        }
-        
-        /* styling tombol navigasi */
-        .btn-primary {
+
+        /* Buttons */
+        .btn {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            justify-content: center;
             padding: 0.75rem 2rem;
-            background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
-            color: white;
             font-weight: 600;
             font-size: 0.9375rem;
             border-radius: 0.5rem;
-            border: none;
+            transition: all 0.3s;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            border: none;
         }
-        
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(31, 41, 55, 0.3);
+        }
+
         .btn-primary:hover:not(:disabled) {
-            background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+            background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 6px 20px rgba(31, 41, 55, 0.4);
         }
-        
+
         .btn-primary:active:not(:disabled) {
             transform: translateY(0);
         }
-        
+
         .btn-primary:disabled {
             opacity: 0.6;
             cursor: not-allowed;
         }
-        
+
         .btn-secondary {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 2rem;
             background: white;
-            color: #6B7280;
-            font-weight: 600;
-            font-size: 0.9375rem;
-            border-radius: 0.5rem;
-            border: 2px solid #E5E7EB;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #6b7280;
+            border: 2px solid #e5e7eb;
         }
-        
+
         .btn-secondary:hover {
-            background: #F9FAFB;
-            border-color: #10b981;
-            color: #10b981;
+            background: #f3f4f6;
+            border-color: #1f2937;
+            color: #1f2937;
+        }
+
+        /* Password Toggle */
+        .password-toggle {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #9ca3af;
+            padding: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .password-toggle:hover {
+            color: #6b7280;
+        }
+
+        .password-toggle .eye-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        /* File Upload Area */
+        .file-upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+            background: #f9fafb;
+        }
+
+        .file-upload-area:hover {
+            border-color: #1f2937;
+            background: #f3f4f6;
+        }
+
+        .file-upload-icon {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Hidden content */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Step content */
+        .step-content {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
@@ -238,9 +338,9 @@
                 </div>
 
                 {{-- main form card --}}
-                <div class="register-card fade-in-up">
-                    {{-- PERBAIKAN 2: step indicator - STRUKTUR KONSISTEN DENGAN STUDENT --}}
-                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-8 pb-6 border-b border-gray-100">
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                    {{-- step indicator --}}
+                    <div class="bg-gradient-to-r from-gray-100 to-gray-200 p-8 pb-6 border-b border-gray-100">
                         <div class="step-indicator-container">
                             <div class="step-item" id="step1-item">
                                 <div class="step-circle active" id="step1-circle">
@@ -296,67 +396,97 @@
 
                             <div class="space-y-6">
                                 {{-- nama instansi --}}
-                                <div>
-                                    <label for="institution_name" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Nama Instansi <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" 
-                                           id="institution_name" 
-                                           name="institution_name" 
-                                           value="{{ old('institution_name') }}"
-                                           placeholder="Contoh: Desa Sukamaju"
-                                           class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition @error('institution_name') border-red-500 @enderror"
-                                           required>
+                                <div class="form-field-group">
+                                    <label for="institution_name" class="form-label required">Nama Instansi</label>
+                                    <div class="form-input-wrapper">
+                                        <input type="text"
+                                               id="institution_name"
+                                               name="institution_name"
+                                               value="{{ old('institution_name') }}"
+                                               placeholder="Contoh: Desa Sukamaju"
+                                               class="form-input"
+                                               autocomplete="organization"
+                                               required>
+                                        <svg class="form-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="error-message hidden" id="error-institution_name"></p>
                                     @error('institution_name')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        <p class="error-message">
+                                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
                                     @enderror
                                 </div>
 
                                 {{-- jenis instansi --}}
-                                <div>
-                                    <label for="institution_type" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Jenis Instansi <span class="text-red-500">*</span>
-                                    </label>
-                                    <select id="institution_type" 
-                                            name="institution_type" 
-                                            class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition @error('institution_type') border-red-500 @enderror"
-                                            required>
-                                        <option value="">Pilih Jenis Instansi</option>
-                                        <option value="pemerintah_desa" {{ old('institution_type') == 'pemerintah_desa' ? 'selected' : '' }}>Pemerintah Desa</option>
-                                        <option value="dinas" {{ old('institution_type') == 'dinas' ? 'selected' : '' }}>Dinas</option>
-                                        <option value="ngo" {{ old('institution_type') == 'ngo' ? 'selected' : '' }}>NGO</option>
-                                        <option value="puskesmas" {{ old('institution_type') == 'puskesmas' ? 'selected' : '' }}>Puskesmas</option>
-                                        <option value="sekolah" {{ old('institution_type') == 'sekolah' ? 'selected' : '' }}>Sekolah</option>
-                                        <option value="perguruan_tinggi" {{ old('institution_type') == 'perguruan_tinggi' ? 'selected' : '' }}>Perguruan Tinggi</option>
-                                        <option value="lainnya" {{ old('institution_type') == 'lainnya' ? 'selected' : '' }}>Lainnya</option>
-                                    </select>
+                                <div class="form-field-group">
+                                    <label for="institution_type" class="form-label required">Jenis Instansi</label>
+                                    <div class="form-input-wrapper">
+                                        <select id="institution_type"
+                                                name="institution_type"
+                                                class="form-input"
+                                                autocomplete="off"
+                                                required>
+                                            <option value="">Pilih Jenis Instansi</option>
+                                            <option value="pemerintah_desa" {{ old('institution_type') == 'pemerintah_desa' ? 'selected' : '' }}>Pemerintah Desa</option>
+                                            <option value="dinas" {{ old('institution_type') == 'dinas' ? 'selected' : '' }}>Dinas</option>
+                                            <option value="ngo" {{ old('institution_type') == 'ngo' ? 'selected' : '' }}>NGO</option>
+                                            <option value="puskesmas" {{ old('institution_type') == 'puskesmas' ? 'selected' : '' }}>Puskesmas</option>
+                                            <option value="sekolah" {{ old('institution_type') == 'sekolah' ? 'selected' : '' }}>Sekolah</option>
+                                            <option value="perguruan_tinggi" {{ old('institution_type') == 'perguruan_tinggi' ? 'selected' : '' }}>Perguruan Tinggi</option>
+                                            <option value="lainnya" {{ old('institution_type') == 'lainnya' ? 'selected' : '' }}>Lainnya</option>
+                                        </select>
+                                        <svg class="form-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="error-message hidden" id="error-institution_type"></p>
                                     @error('institution_type')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        <p class="error-message">
+                                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
                                     @enderror
                                 </div>
 
                                 {{-- email resmi --}}
-                                <div>
-                                    <label for="official_email" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Email Resmi Instansi <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="email" 
-                                           id="official_email" 
-                                           name="official_email" 
-                                           value="{{ old('official_email') }}"
-                                           placeholder="Contoh: info@desasukamaju.go.id"
-                                           class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition @error('official_email') border-red-500 @enderror"
-                                           required>
+                                <div class="form-field-group">
+                                    <label for="official_email" class="form-label required">Email Resmi Instansi</label>
+                                    <div class="form-input-wrapper">
+                                        <input type="email"
+                                               id="official_email"
+                                               name="official_email"
+                                               value="{{ old('official_email') }}"
+                                               placeholder="Contoh: info@desasukamaju.go.id"
+                                               class="form-input"
+                                               autocomplete="email"
+                                               required>
+                                        <svg class="form-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="error-message hidden" id="error-official_email"></p>
                                     @error('official_email')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        <p class="error-message">
+                                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
                                     @enderror
                                 </div>
                             </div>
 
                             <div class="flex justify-end mt-8">
-                                <button type="button" onclick="nextStep(2)" class="btn-primary">
-                                    Selanjutnya
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <button type="button" onclick="nextStep(2)" class="btn btn-primary">
+                                    Lanjutkan
+                                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                                     </svg>
                                 </button>
@@ -372,77 +502,104 @@
 
                             <div class="space-y-6">
                                 {{-- alamat lengkap --}}
-                                <div>
-                                    <label for="address" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Alamat Lengkap <span class="text-red-500">*</span>
-                                    </label>
-                                    <textarea id="address" 
-                                              name="address" 
+                                <div class="form-field-group">
+                                    <label for="address" class="form-label required">Alamat Lengkap</label>
+                                    <textarea id="address"
+                                              name="address"
                                               rows="3"
                                               placeholder="Contoh: Jl. Raya Sukamaju No. 123, RT 02/RW 05"
-                                              class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition @error('address') border-red-500 @enderror"
+                                              class="form-input"
+                                              style="padding-right: 1rem;"
+                                              autocomplete="street-address"
                                               required>{{ old('address') }}</textarea>
+                                    <p class="error-message hidden" id="error-address"></p>
                                     @error('address')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        <p class="error-message">
+                                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
                                     @enderror
                                 </div>
 
                                 {{-- provinsi --}}
-                                <div>
-                                    <label for="province_id" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Provinsi <span class="text-red-500">*</span>
-                                    </label>
-                                    
-                                    <select id="province_id" 
-                                            name="province_id"
-                                            x-model="selectedProvince"
-                                            @change="loadRegencies()"
-                                            class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition @error('province_id') border-red-500 @enderror"
-                                            required>
-                                        <option value="">Pilih Provinsi</option>
-                                        @foreach($provinces as $province)
-                                            <option value="{{ $province->id }}" {{ old('province_id') == $province->id ? 'selected' : '' }}>
-                                                {{ $province->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                <div class="form-field-group">
+                                    <label for="province_id" class="form-label required">Provinsi</label>
+                                    <div class="form-input-wrapper">
+                                        <select id="province_id"
+                                                name="province_id"
+                                                x-model="selectedProvince"
+                                                @change="loadRegencies()"
+                                                class="form-input"
+                                                autocomplete="address-level1"
+                                                required>
+                                            <option value="">Pilih Provinsi</option>
+                                            @foreach($provinces as $province)
+                                                <option value="{{ $province->id }}" {{ old('province_id') == $province->id ? 'selected' : '' }}>
+                                                    {{ $province->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <svg class="form-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="error-message hidden" id="error-province_id"></p>
                                     @error('province_id')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        <p class="error-message">
+                                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
                                     @enderror
                                 </div>
 
                                 {{-- kabupaten/kota --}}
-                                <div>
-                                    <label for="regency_id" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Kabupaten/Kota <span class="text-red-500">*</span>
-                                    </label>
-                                    <select id="regency_id" 
-                                            name="regency_id"
-                                            x-model="selectedRegency"
-                                            class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition @error('regency_id') border-red-500 @enderror"
-                                            required
-                                            :disabled="!selectedProvince">
-                                        <option value="">Pilih Kabupaten/Kota</option>
-                                        <template x-for="regency in regencies" :key="regency.id">
-                                            <option :value="regency.id" x-text="regency.name"></option>
-                                        </template>
-                                    </select>
+                                <div class="form-field-group">
+                                    <label for="regency_id" class="form-label required">Kabupaten/Kota</label>
+                                    <div class="form-input-wrapper">
+                                        <select id="regency_id"
+                                                name="regency_id"
+                                                x-model="selectedRegency"
+                                                class="form-input"
+                                                autocomplete="address-level2"
+                                                required
+                                                :disabled="!selectedProvince">
+                                            <option value="">Pilih Kabupaten/Kota</option>
+                                            <template x-for="regency in regencies" :key="regency.id">
+                                                <option :value="regency.id" x-text="regency.name"></option>
+                                            </template>
+                                        </select>
+                                        <svg class="form-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="error-message hidden" id="error-regency_id"></p>
                                     @error('regency_id')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        <p class="error-message">
+                                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
                                     @enderror
                                 </div>
                             </div>
 
                             <div class="flex justify-between mt-8">
-                                <button type="button" onclick="prevStep(1)" class="btn-secondary">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <button type="button" onclick="prevStep(1)" class="btn btn-secondary">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                                     </svg>
                                     Kembali
                                 </button>
-                                <button type="button" onclick="nextStep(3)" class="btn-primary">
-                                    Selanjutnya
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <button type="button" onclick="nextStep(3)" class="btn btn-primary">
+                                    Lanjutkan
+                                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                                     </svg>
                                 </button>
@@ -457,57 +614,188 @@
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label for="pic_name" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Nama PIC <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" id="pic_name" name="pic_name" value="{{ old('pic_name') }}" placeholder="Contoh: Budi Santoso" class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg" required>
-                                    @error('pic_name')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+                                {{-- nama pic --}}
+                                <div class="form-field-group">
+                                    <label for="pic_name" class="form-label required">Nama PIC</label>
+                                    <div class="form-input-wrapper">
+                                        <input type="text"
+                                               id="pic_name"
+                                               name="pic_name"
+                                               value="{{ old('pic_name') }}"
+                                               placeholder="Contoh: Budi Santoso"
+                                               class="form-input"
+                                               autocomplete="name"
+                                               required>
+                                        <svg class="form-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="error-message hidden" id="error-pic_name"></p>
+                                    @error('pic_name')
+                                        <p class="error-message">
+                                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
                                 </div>
-                                <div>
-                                    <label for="pic_position" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Jabatan PIC <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" id="pic_position" name="pic_position" value="{{ old('pic_position') }}" placeholder="Contoh: Sekretaris Desa" class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg" required>
-                                    @error('pic_position')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+
+                                {{-- jabatan pic --}}
+                                <div class="form-field-group">
+                                    <label for="pic_position" class="form-label required">Jabatan PIC</label>
+                                    <div class="form-input-wrapper">
+                                        <input type="text"
+                                               id="pic_position"
+                                               name="pic_position"
+                                               value="{{ old('pic_position') }}"
+                                               placeholder="Contoh: Sekretaris Desa"
+                                               class="form-input"
+                                               autocomplete="organization-title"
+                                               required>
+                                        <svg class="form-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="error-message hidden" id="error-pic_position"></p>
+                                    @error('pic_position')
+                                        <p class="error-message">
+                                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
                                 </div>
-                                <div>
-                                    <label for="phone_number" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Nomor Telepon <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="tel" id="phone_number" name="phone_number" value="{{ old('phone_number') }}" placeholder="Contoh: 081234567890" class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg" required>
-                                    @error('phone_number')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+
+                                {{-- nomor telepon --}}
+                                <div class="form-field-group">
+                                    <label for="phone_number" class="form-label required">Nomor Telepon</label>
+                                    <div class="form-input-wrapper">
+                                        <input type="tel"
+                                               id="phone_number"
+                                               name="phone_number"
+                                               value="{{ old('phone_number') }}"
+                                               placeholder="Contoh: 081234567890"
+                                               class="form-input"
+                                               autocomplete="tel"
+                                               required>
+                                        <svg class="form-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="error-message hidden" id="error-phone_number"></p>
+                                    @error('phone_number')
+                                        <p class="error-message">
+                                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
                                 </div>
-                                <div>
-                                    <label for="logo" class="block text-sm font-semibold text-gray-700 mb-2">Logo Instansi (Opsional)</label>
-                                    <input type="file" id="logo" name="logo" accept="image/*" class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg">
+
+                                {{-- logo instansi --}}
+                                <div class="form-field-group">
+                                    <label for="logo" class="form-label">Logo Instansi (Opsional)</label>
+                                    <input type="file"
+                                           id="logo"
+                                           name="logo"
+                                           accept="image/*"
+                                           class="form-input"
+                                           style="padding: 0.5rem 1rem;"
+                                           autocomplete="off">
+                                    <p class="error-message hidden" id="error-logo"></p>
+                                    @error('logo')
+                                        <p class="error-message">
+                                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
                                 </div>
-                                <div>
-                                    <label for="verification_document" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Dokumen Verifikasi <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="file" id="verification_document" name="verification_document" accept="application/pdf" class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg" required>
+
+                                {{-- dokumen verifikasi --}}
+                                <div class="form-field-group">
+                                    <label for="verification_document" class="form-label required">Dokumen Verifikasi</label>
+                                    <input type="file"
+                                           id="verification_document"
+                                           name="verification_document"
+                                           accept="application/pdf"
+                                           class="form-input"
+                                           style="padding: 0.5rem 1rem;"
+                                           autocomplete="off"
+                                           required>
+                                    <p class="error-message hidden" id="error-verification_document"></p>
+                                    @error('verification_document')
+                                        <p class="error-message">
+                                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
                                 </div>
-                                <div>
-                                    <label for="website" class="block text-sm font-semibold text-gray-700 mb-2">Website (Opsional)</label>
-                                    <input type="url" id="website" name="website" value="{{ old('website') }}" placeholder="https://www.contoh.go.id" class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg">
+
+                                {{-- website --}}
+                                <div class="form-field-group">
+                                    <label for="website" class="form-label">Website (Opsional)</label>
+                                    <div class="form-input-wrapper">
+                                        <input type="url"
+                                               id="website"
+                                               name="website"
+                                               value="{{ old('website') }}"
+                                               placeholder="https://www.contoh.go.id"
+                                               class="form-input"
+                                               autocomplete="url">
+                                        <svg class="form-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="error-message hidden" id="error-website"></p>
+                                    @error('website')
+                                        <p class="error-message">
+                                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
                                 </div>
-                                <div class="md:col-span-2">
-                                    <label for="description" class="block text-sm font-semibold text-gray-700 mb-2">Deskripsi Instansi (Opsional)</label>
-                                    <textarea id="description" name="description" rows="4" placeholder="Ceritakan Tentang Instansi Anda..." class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg">{{ old('description') }}</textarea>
+
+                                {{-- deskripsi instansi --}}
+                                <div class="md:col-span-2 form-field-group">
+                                    <label for="description" class="form-label">Deskripsi Instansi (Opsional)</label>
+                                    <textarea id="description"
+                                              name="description"
+                                              rows="4"
+                                              placeholder="Ceritakan Tentang Instansi Anda..."
+                                              class="form-input"
+                                              style="padding-right: 1rem;"
+                                              autocomplete="off">{{ old('description') }}</textarea>
+                                    <p class="error-message hidden" id="error-description"></p>
+                                    @error('description')
+                                        <p class="error-message">
+                                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
                                 </div>
                             </div>
 
                             <div class="flex justify-between mt-8">
-                                <button type="button" onclick="prevStep(2)" class="btn-secondary">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <button type="button" onclick="prevStep(2)" class="btn btn-secondary">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                                     </svg>
                                     Kembali
                                 </button>
-                                <button type="button" onclick="nextStep(4)" class="btn-primary">
-                                    Selanjutnya
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <button type="button" onclick="nextStep(4)" class="btn btn-primary">
+                                    Lanjutkan
+                                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                                     </svg>
                                 </button>
@@ -522,12 +810,30 @@
                             </div>
 
                             <div class="space-y-6">
-                                <div>
-                                    <label for="username" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Username <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" id="username" name="username" value="{{ old('username') }}" placeholder="Contoh: desasukamaju" class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg" required>
-                                    @error('username')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+                                <div class="form-field-group">
+                                    <label for="username" class="form-label required">Username</label>
+                                    <div class="form-input-wrapper">
+                                        <input type="text"
+                                               id="username"
+                                               name="username"
+                                               value="{{ old('username') }}"
+                                               placeholder="Contoh: desasukamaju"
+                                               class="form-input"
+                                               autocomplete="username"
+                                               required>
+                                        <svg class="form-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="error-message hidden" id="error-username"></p>
+                                    @error('username')
+                                        <p class="error-message">
+                                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
                                 </div>
                                 
                                 {{-- peringatan password requirement --}}
@@ -553,47 +859,94 @@
                                     </div>
                                 </div>
                                 
-                                <div>
-                                    <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Password <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="password" id="password" name="password" placeholder="Minimal 8 Karakter" class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg" required>
-                                    @error('password')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+                                <div class="form-field-group">
+                                    <label for="password" class="form-label required">Password</label>
+                                    <div class="form-input-wrapper">
+                                        <input type="password"
+                                               id="password"
+                                               name="password"
+                                               placeholder="Minimal 8 Karakter"
+                                               class="form-input"
+                                               autocomplete="new-password"
+                                               required>
+                                        <button type="button"
+                                                onclick="togglePassword('password')"
+                                                class="password-toggle">
+                                            <svg class="eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <p class="error-message hidden" id="error-password"></p>
+                                    @error('password')
+                                        <p class="error-message">
+                                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
                                 </div>
-                                <div>
-                                    <label for="password_confirmation" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Konfirmasi Password <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Ketik Ulang Password" class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg" required>
+                                <div class="form-field-group">
+                                    <label for="password_confirmation" class="form-label required">Konfirmasi Password</label>
+                                    <div class="form-input-wrapper">
+                                        <input type="password"
+                                               id="password_confirmation"
+                                               name="password_confirmation"
+                                               placeholder="Ketik Ulang Password"
+                                               class="form-input"
+                                               autocomplete="new-password"
+                                               required>
+                                        <button type="button"
+                                                onclick="togglePassword('password_confirmation')"
+                                                class="password-toggle">
+                                            <svg class="eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <p class="error-message hidden" id="error-password_confirmation"></p>
                                 </div>
                             </div>
 
                             <div class="flex justify-between mt-8">
-                                <button type="button" onclick="prevStep(3)" class="btn-secondary">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <button type="button" onclick="prevStep(3)" class="btn btn-secondary">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                                     </svg>
                                     Kembali
                                 </button>
-                                <button type="submit" class="btn-primary">
+                                <button type="submit" class="btn btn-primary">
                                     Daftar Sekarang
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                     </svg>
                                 </button>
                             </div>
                         </div>
                     </form>
+
+                    {{-- login link --}}
+                    <div class="px-8 pb-8 text-center">
+                        <p class="text-gray-600">
+                            Sudah Punya Akun?
+                            <a href="{{ route('login') }}" class="text-gray-800 hover:text-gray-900 font-semibold transition-colors">
+                                Login Di Sini
+                            </a>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     {{-- loading overlay --}}
-    <div id="loadingOverlay" style="display: none;" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display: none;">
         <div class="bg-white rounded-lg p-8 flex flex-col items-center">
-            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-green-500 mb-4"></div>
-            <p class="text-gray-700 font-semibold">Mendaftarkan Akun Anda...</p>
+            <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-800"></div>
+            <p class="mt-4 text-gray-700 font-semibold">Mendaftarkan Akun Anda...</p>
         </div>
     </div>
 
@@ -722,6 +1075,12 @@
                 }
             }
         }
+    }
+
+    // password toggle function
+    function togglePassword(inputId) {
+        const input = document.getElementById(inputId);
+        input.type = input.type === 'password' ? 'text' : 'password';
     }
 
     document.getElementById('institutionRegisterForm')?.addEventListener('submit', async function(e) {

@@ -42,7 +42,7 @@
                     <div class="container mx-auto px-24 md:px-32 py-12">
                         <div class="max-w-5xl mx-auto text-center">
                             {{-- heading --}}
-                            <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-8 leading-tight">
+                            <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-8 leading-tight">
                                 Perkenalkan, <span class="text-blue-600">Lapangku</span>
                             </h2>
 
@@ -156,7 +156,7 @@
                         <div class="max-w-xl text-white relative z-10">
                             <div class="mb-6">
                                 <div class="w-16 h-1 bg-white rounded-full mb-6"></div>
-                                <h2 class="text-3xl md:text-4xl font-bold leading-tight mb-6">
+                                <h2 class="text-3xl md:text-4xl font-bold leading-tight mb-6 text-white">
                                     Lapangku Dari Tahun Ke Tahun
                                 </h2>
                             </div>
@@ -181,7 +181,7 @@
                     </div>
 
                     {{-- RIGHT SIDE: Dari Mahasiswa --}}
-                    <div class="w-1/2 flex items-start justify-center p-12 pt-24" style="background-color: #ffffff; background-image: radial-gradient(at 15% 15%, rgba(99, 102, 241, 0.15) 0px, transparent 50%), radial-gradient(at 85% 20%, rgba(236, 72, 153, 0.12) 0px, transparent 50%), radial-gradient(at 25% 75%, rgba(59, 130, 246, 0.15) 0px, transparent 50%), radial-gradient(at 75% 85%, rgba(168, 85, 247, 0.12) 0px, transparent 50%), radial-gradient(at 50% 50%, rgba(147, 51, 234, 0.1) 0px, transparent 50%);">
+                    <div class="w-1/2 flex items-center justify-center p-8" style="background-color: #ffffff; background-image: radial-gradient(at 15% 15%, rgba(99, 102, 241, 0.15) 0px, transparent 50%), radial-gradient(at 85% 20%, rgba(236, 72, 153, 0.12) 0px, transparent 50%), radial-gradient(at 25% 75%, rgba(59, 130, 246, 0.15) 0px, transparent 50%), radial-gradient(at 75% 85%, rgba(168, 85, 247, 0.12) 0px, transparent 50%), radial-gradient(at 50% 50%, rgba(147, 51, 234, 0.1) 0px, transparent 50%);">
                         <div class="max-w-xl">
                             <div class="flex items-center justify-center mb-6">
                                 <div class="relative">
@@ -195,8 +195,8 @@
 
                             <div class="text-center">
                                 <div class="w-16 h-1 bg-blue-600 rounded-full mb-4 mx-auto"></div>
-                                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-5 leading-tight">
-                                    Dari Mahasiswa, <br/>Untuk Indonesia
+                                <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-5 leading-tight">
+                                    Dari Mahasiswa, Untuk Indonesia
                                 </h2>
                                 <p class="text-base md:text-lg text-gray-700 leading-relaxed mb-4">
                                     Menyongsong usia ke-2 tahun, Lapangku terus tumbuh dan bertransformasi. Dari pelabuhan kecil di masa lalu hingga platform digital masa kini, Lapangku telah menghadapi beragam tantangan dan membuka banyak peluang.

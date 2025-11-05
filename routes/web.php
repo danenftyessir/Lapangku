@@ -10,6 +10,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\Auth\ValidationController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\PriceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,7 +18,7 @@ use App\Http\Controllers\ContactController;
 |--------------------------------------------------------------------------
 |
 | file ini berisi semua routing untuk aplikasi KKN-GO
-| 
+|
 */
 
 /*
@@ -30,7 +31,10 @@ use App\Http\Controllers\ContactController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // about us page
-Route::get('/about', [AboutController::class, 'index'])->name('about'); 
+Route::get('/about', [AboutController::class, 'index'])->name('about');
+
+// pricing page
+Route::get('/price', [PriceController::class, 'index'])->name('price');
 
 // contact page
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');

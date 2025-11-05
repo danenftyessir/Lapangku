@@ -8,7 +8,7 @@
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+<body class="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-gray-100">
     <!-- navigation -->
     <div class="absolute top-6 left-6 right-6 flex items-center justify-between z-10">
         <a href="{{ route('home') }}" class="inline-flex items-center text-gray-800 hover:text-gray-900 transition-colors group">
@@ -43,31 +43,31 @@
                 <!-- pilihan user type -->
                 <div class="space-y-4">
                     <!-- mahasiswa card -->
-                    <a href="{{ route('register.student') }}" 
-                       class="group block p-6 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                    <a href="{{ route('register.student') }}"
+                       class="group block p-6 border-2 border-gray-200 rounded-xl hover:border-yellow-400 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
                         <div class="flex items-center">
                             <!-- icon -->
                             <div class="flex-shrink-0">
-                                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-500 transition-colors">
-                                    <svg class="w-8 h-8 text-blue-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center group-hover:bg-yellow-400 transition-colors">
+                                    <svg class="w-8 h-8 text-yellow-600 group-hover:text-gray-900 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                                     </svg>
                                 </div>
                             </div>
-                            
+
                             <!-- content -->
                             <div class="ml-6 flex-1">
-                                <h3 class="text-2xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                <h3 class="text-2xl font-bold text-gray-900 mb-2 group-hover:text-yellow-600 transition-colors">
                                     Mahasiswa
                                 </h3>
                                 <p class="text-gray-600 leading-relaxed">
                                     Daftar sebagai mahasiswa untuk mencari dan mengikuti program KKN
                                 </p>
                             </div>
-                            
+
                             <!-- arrow -->
                             <div class="ml-4">
-                                <svg class="w-6 h-6 text-gray-400 group-hover:text-blue-600 transform group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-6 h-6 text-gray-400 group-hover:text-yellow-600 transform group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
                             </div>
@@ -75,31 +75,31 @@
                     </a>
 
                     <!-- instansi card -->
-                    <a href="{{ route('register.institution') }}" 
-                       class="group block p-6 border-2 border-gray-200 rounded-xl hover:border-green-500 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                    <a href="{{ route('register.institution') }}"
+                       class="group block p-6 border-2 border-gray-200 rounded-xl hover:border-gray-800 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
                         <div class="flex items-center">
                             <!-- icon -->
                             <div class="flex-shrink-0">
-                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-500 transition-colors">
-                                    <svg class="w-8 h-8 text-green-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-gray-800 transition-colors">
+                                    <svg class="w-8 h-8 text-gray-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                                     </svg>
                                 </div>
                             </div>
-                            
+
                             <!-- content -->
                             <div class="ml-6 flex-1">
-                                <h3 class="text-2xl font-bold text-gray-900 mb-2 group-hover:text-green-600 transition-colors">
+                                <h3 class="text-2xl font-bold text-gray-900 mb-2 group-hover:text-gray-800 transition-colors">
                                     Instansi
                                 </h3>
                                 <p class="text-gray-600 leading-relaxed">
                                     Daftar sebagai instansi untuk mempublikasikan program KKN
                                 </p>
                             </div>
-                            
+
                             <!-- arrow -->
                             <div class="ml-4">
-                                <svg class="w-6 h-6 text-gray-400 group-hover:text-green-600 transform group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-6 h-6 text-gray-400 group-hover:text-gray-800 transform group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
                             </div>
@@ -110,8 +110,8 @@
                 <!-- login link -->
                 <div class="mt-8 text-center">
                     <p class="text-gray-600">
-                        Sudah punya akun? 
-                        <a href="{{ route('login') }}" class="text-blue-600 hover:text-blue-700 font-semibold hover:underline transition-colors">
+                        Sudah punya akun?
+                        <a href="{{ route('login') }}" class="text-gray-800 hover:text-gray-900 font-semibold hover:underline transition-colors">
                             Masuk di sini
                         </a>
                     </p>

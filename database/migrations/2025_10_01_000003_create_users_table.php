@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * jalankan migrasi untuk membuat tabel users
      */
     public function up(): void
     {
@@ -15,10 +15,17 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->string('username')->unique();
             $table->string('password');
+            $table->enum('user_type', ['student', 'institution', 'admin'])->default('student');
+            $table->boolean('is_active')->default(true);
+            $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
+            
+            $table->index('email');
+            $table->index('username');
+            $table->index('user_type');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -38,7 +45,7 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * rollback migrasi
      */
     public function down(): void
     {

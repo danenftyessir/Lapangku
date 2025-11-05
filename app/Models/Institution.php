@@ -34,6 +34,11 @@ class Institution extends Model
         'description',
         'is_verified',
         'verified_at',
+        'verification_status',
+        'verification_score',
+        'verification_confidence',
+        'rejection_reason',
+        'verified_by',
     ];
 
     /**
@@ -82,6 +87,22 @@ class Institution extends Model
     public function projects()
     {
         return $this->hasMany(Project::class);
+    }
+
+    /**
+     * relasi ke verification documents
+     */
+    public function verificationDocuments()
+    {
+        return $this->hasMany(VerificationDocument::class);
+    }
+
+    /**
+     * relasi ke verifier (user who verified)
+     */
+    public function verifier()
+    {
+        return $this->belongsTo(User::class, 'verified_by');
     }
 
     /**

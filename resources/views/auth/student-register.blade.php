@@ -8,8 +8,6 @@
     <title>Daftar Sebagai Mahasiswa - KKN-GO</title>
     
     @vite(['resources/css/app.css'])
-    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/auth-student.css') }}">
     
     <style>
         /* background image dengan opacity */
@@ -17,7 +15,7 @@
             position: relative;
             min-height: 100vh;
         }
-        
+
         .register-container.student-register::before {
             content: '';
             position: fixed;
@@ -33,10 +31,275 @@
             z-index: 0;
             pointer-events: none;
         }
-        
+
         .register-container.student-register > * {
             position: relative;
             z-index: 1;
+        }
+
+        /* Form Styling */
+        .form-field-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-label.required::after {
+            content: ' *';
+            color: #ef4444;
+        }
+
+        .form-input-wrapper {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            padding-right: 2.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.9375rem;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #FACC15;
+            ring: 2px;
+            ring-color: rgba(250, 204, 21, 0.3);
+            box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.1);
+        }
+
+        .form-input-icon {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #9ca3af;
+            pointer-events: none;
+        }
+
+        .error-message {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #ef4444;
+        }
+
+        .error-message.hidden {
+            display: none;
+        }
+
+        .error-message svg {
+            width: 1rem;
+            height: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* Step Indicator */
+        .step-indicator-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.125rem;
+            transition: all 0.3s;
+            border: 2px solid #d1d5db;
+            background: white;
+            color: #9ca3af;
+        }
+
+        .step-circle.active {
+            background: linear-gradient(135deg, #FDE047 0%, #FACC15 100%);
+            border-color: transparent;
+            color: #1f2937;
+            box-shadow: 0 4px 12px rgba(250, 204, 21, 0.4);
+            transform: scale(1.1);
+        }
+
+        .step-circle.completed {
+            background: #FACC15;
+            border-color: transparent;
+            color: #1f2937;
+        }
+
+        .step-circle.inactive {
+            background: #f3f4f6;
+            border-color: #e5e7eb;
+            color: #9ca3af;
+        }
+
+        .step-number {
+            font-weight: 600;
+        }
+
+        .step-label {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        .step-item .step-circle.active ~ .step-label,
+        .step-circle.active + .step-label {
+            color: #FACC15;
+            font-weight: 600;
+        }
+
+        .step-connector {
+            flex: 1;
+            height: 2px;
+            background: #e5e7eb;
+            margin: 0 0.5rem;
+            position: relative;
+            top: -1.5rem;
+        }
+
+        .step-connector.completed {
+            background: #FACC15;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #FDE047 0%, #FACC15 100%);
+            color: #1f2937;
+            box-shadow: 0 4px 12px rgba(250, 204, 21, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #FACC15 0%, #EAB308 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(250, 204, 21, 0.4);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #6b7280;
+            border: 2px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #FEF9C3;
+            border-color: #FACC15;
+            color: #1f2937;
+        }
+
+        /* Password Toggle */
+        .password-toggle {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #9ca3af;
+            padding: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .password-toggle:hover {
+            color: #6b7280;
+        }
+
+        .password-toggle .eye-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        /* File Upload Area */
+        .file-upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+            background: #f9fafb;
+        }
+
+        .file-upload-area:hover {
+            border-color: #FACC15;
+            background: #FEF9C3;
+        }
+
+        .file-upload-icon {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Hidden content */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Step content */
+        .step-content {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
@@ -73,7 +336,7 @@
                 {{-- card form --}}
                 <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
                     {{-- step indicator --}}
-                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-8 pb-6 border-b border-gray-100">
+                    <div class="bg-gradient-to-r from-yellow-50 to-yellow-100 p-8 pb-6 border-b border-gray-100">
                         <div class="step-indicator-container">
                             <div class="step-item" id="step1-item">
                                 <div class="step-circle active" id="step1-circle">
@@ -121,12 +384,13 @@
                                 <div class="form-field-group">
                                     <label for="first_name" class="form-label required">Nama Depan</label>
                                     <div class="form-input-wrapper">
-                                        <input type="text" 
-                                               id="first_name" 
-                                               name="first_name" 
+                                        <input type="text"
+                                               id="first_name"
+                                               name="first_name"
                                                value="{{ old('first_name') }}"
                                                placeholder="Contoh: Ahmad"
                                                class="form-input"
+                                               autocomplete="given-name"
                                                required>
                                         <svg class="form-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -147,12 +411,13 @@
                                 <div class="form-field-group">
                                     <label for="last_name" class="form-label required">Nama Belakang</label>
                                     <div class="form-input-wrapper">
-                                        <input type="text" 
-                                               id="last_name" 
-                                               name="last_name" 
+                                        <input type="text"
+                                               id="last_name"
+                                               name="last_name"
                                                value="{{ old('last_name') }}"
                                                placeholder="Contoh: Hidayat"
                                                class="form-input"
+                                               autocomplete="family-name"
                                                required>
                                         <svg class="form-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -173,12 +438,13 @@
                                 <div class="form-field-group">
                                     <label for="email" class="form-label required">Email Universitas</label>
                                     <div class="form-input-wrapper">
-                                        <input type="email" 
-                                               id="email" 
-                                               name="email" 
+                                        <input type="email"
+                                               id="email"
+                                               name="email"
                                                value="{{ old('email') }}"
                                                placeholder="Contoh: ahmad@student.university.ac.id"
                                                class="form-input"
+                                               autocomplete="email"
                                                required>
                                         <svg class="form-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
@@ -199,12 +465,13 @@
                                 <div class="form-field-group">
                                     <label for="whatsapp_number" class="form-label required">Nomor WhatsApp</label>
                                     <div class="form-input-wrapper">
-                                        <input type="tel" 
-                                               id="whatsapp_number" 
-                                               name="whatsapp_number" 
+                                        <input type="tel"
+                                               id="whatsapp_number"
+                                               name="whatsapp_number"
                                                value="{{ old('whatsapp_number') }}"
                                                placeholder="Contoh: 08123456789"
                                                class="form-input"
+                                               autocomplete="tel"
                                                required>
                                         <svg class="form-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
@@ -279,9 +546,10 @@
                                 <div class="form-field-group">
                                     <label for="university_id" class="form-label required">Universitas</label>
                                     <div class="form-input-wrapper">
-                                        <select id="university_id" 
-                                                name="university_id" 
+                                        <select id="university_id"
+                                                name="university_id"
                                                 class="form-input"
+                                                autocomplete="organization"
                                                 required>
                                             <option value="">Pilih Universitas</option>
                                             @foreach($universities as $university)
@@ -309,12 +577,13 @@
                                 <div class="form-field-group">
                                     <label for="major" class="form-label required">Jurusan</label>
                                     <div class="form-input-wrapper">
-                                        <input type="text" 
-                                               id="major" 
-                                               name="major" 
+                                        <input type="text"
+                                               id="major"
+                                               name="major"
                                                value="{{ old('major') }}"
                                                placeholder="Contoh: Teknik Informatika"
                                                class="form-input"
+                                               autocomplete="off"
                                                required>
                                         <svg class="form-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
@@ -335,12 +604,13 @@
                                 <div class="form-field-group">
                                     <label for="nim" class="form-label required">NIM</label>
                                     <div class="form-input-wrapper">
-                                        <input type="text" 
-                                               id="nim" 
-                                               name="nim" 
+                                        <input type="text"
+                                               id="nim"
+                                               name="nim"
                                                value="{{ old('nim') }}"
                                                placeholder="Contoh: 23051234567"
                                                class="form-input"
+                                               autocomplete="off"
                                                required>
                                         <svg class="form-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
@@ -361,9 +631,10 @@
                                 <div class="form-field-group">
                                     <label for="semester" class="form-label required">Semester</label>
                                     <div class="form-input-wrapper">
-                                        <select id="semester" 
-                                                name="semester" 
+                                        <select id="semester"
+                                                name="semester"
                                                 class="form-input"
+                                                autocomplete="off"
                                                 required>
                                             <option value="">Pilih Semester</option>
                                             @for($i = 1; $i <= 14; $i++)
@@ -415,12 +686,13 @@
                                 <div class="form-field-group">
                                     <label for="username" class="form-label required">Username</label>
                                     <div class="form-input-wrapper">
-                                        <input type="text" 
-                                               id="username" 
-                                               name="username" 
+                                        <input type="text"
+                                               id="username"
+                                               name="username"
                                                value="{{ old('username') }}"
                                                placeholder="Contoh: ahmadfauzi123"
                                                class="form-input"
+                                               autocomplete="username"
                                                required>
                                         <svg class="form-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -438,23 +710,23 @@
                                 </div>
 
                                 {{-- announcement password requirement --}}
-                                <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                                     <div class="flex items-start gap-3">
-                                        <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg class="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
                                         </svg>
                                         <div class="flex-1">
-                                            <p class="text-sm font-semibold text-amber-800 mb-2">Syarat Password:</p>
-                                            <ul class="text-sm text-amber-700 space-y-1 list-disc list-inside">
+                                            <p class="text-sm font-semibold text-yellow-800 mb-2">Syarat Password:</p>
+                                            <ul class="text-sm text-yellow-700 space-y-1 list-disc list-inside">
                                                 <li>Minimal 8 karakter</li>
                                                 <li>Mengandung huruf besar (A-Z)</li>
                                                 <li>Mengandung huruf kecil (a-z)</li>
                                                 <li>Mengandung simbol (@, #, $, !, %, *, ?, &, _)</li>
                                             </ul>
-                                            <p class="text-sm text-amber-700 mt-3">
-                                                <span class="font-semibold">Contoh password yang valid:</span> 
-                                                <code class="bg-amber-100 px-2 py-1 rounded text-amber-900 font-mono">Mahasiswa2024!</code> atau 
-                                                <code class="bg-amber-100 px-2 py-1 rounded text-amber-900 font-mono">KKNGo#2024</code>
+                                            <p class="text-sm text-yellow-700 mt-3">
+                                                <span class="font-semibold">Contoh password yang valid:</span>
+                                                <code class="bg-yellow-100 px-2 py-1 rounded text-yellow-900 font-mono">Mahasiswa2024!</code> atau
+                                                <code class="bg-yellow-100 px-2 py-1 rounded text-yellow-900 font-mono">KKNGo#2024</code>
                                             </p>
                                         </div>
                                     </div>
@@ -464,11 +736,12 @@
                                 <div class="form-field-group">
                                     <label for="password" class="form-label required">Password</label>
                                     <div class="form-input-wrapper">
-                                        <input type="password" 
-                                            id="password" 
-                                            name="password" 
+                                        <input type="password"
+                                            id="password"
+                                            name="password"
                                             placeholder="Minimal 8 Karakter"
                                             class="form-input"
+                                            autocomplete="new-password"
                                             required>
                                         <button type="button" 
                                                 onclick="togglePassword('password')" 
@@ -494,11 +767,12 @@
                                 <div class="form-field-group">
                                     <label for="password_confirmation" class="form-label required">Konfirmasi Password</label>
                                     <div class="form-input-wrapper">
-                                        <input type="password" 
-                                            id="password_confirmation" 
-                                            name="password_confirmation" 
+                                        <input type="password"
+                                            id="password_confirmation"
+                                            name="password_confirmation"
                                             placeholder="Ketik Ulang Password"
                                             class="form-input"
+                                            autocomplete="new-password"
                                             required>
                                         <button type="button" 
                                                 onclick="togglePassword('password_confirmation')" 
@@ -522,13 +796,13 @@
 
                                 {{-- terms --}}
                                 <div class="flex items-start">
-                                    <input type="checkbox" 
-                                           id="terms" 
-                                           name="terms" 
-                                           class="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                    <input type="checkbox"
+                                           id="terms"
+                                           name="terms"
+                                           class="mt-1 w-4 h-4 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500"
                                            required>
                                     <label for="terms" class="ml-3 text-sm text-gray-600">
-                                        Saya Setuju Dengan <a href="#" class="text-blue-600 hover:text-blue-700 font-semibold">Syarat Dan Ketentuan</a> Serta <a href="#" class="text-blue-600 hover:text-blue-700 font-semibold">Kebijakan Privasi</a> KKN-GO
+                                        Saya Setuju Dengan <a href="#" class="text-yellow-600 hover:text-yellow-700 font-semibold">Syarat Dan Ketentuan</a> Serta <a href="#" class="text-yellow-600 hover:text-yellow-700 font-semibold">Kebijakan Privasi</a> KKN-GO
                                     </label>
                                 </div>
                             </div>
@@ -554,8 +828,8 @@
                     {{-- login link --}}
                     <div class="px-8 pb-8 text-center">
                         <p class="text-gray-600">
-                            Sudah Punya Akun? 
-                            <a href="{{ route('login') }}" class="text-blue-600 hover:text-blue-700 font-semibold transition-colors">
+                            Sudah Punya Akun?
+                            <a href="{{ route('login') }}" class="text-yellow-600 hover:text-yellow-700 font-semibold transition-colors">
                                 Login Di Sini
                             </a>
                         </p>
@@ -568,7 +842,7 @@
     {{-- loading overlay --}}
     <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display: none;">
         <div class="bg-white rounded-lg p-8 flex flex-col items-center">
-            <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
+            <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-yellow-400"></div>
             <p class="mt-4 text-gray-700 font-semibold">Mendaftarkan Akun Anda...</p>
         </div>
     </div>
