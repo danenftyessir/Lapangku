@@ -9,7 +9,7 @@
         scroll-behavior: smooth;
     }
 
-    /* team member cards - MINIMALIS */
+    /* team member cards */
     .team-card {
         background: white;
         border: 1px solid #e5e7eb;
@@ -175,22 +175,22 @@
     <section class="relative h-screen min-h-[600px] overflow-hidden">
         {{-- background image --}}
         <div class="absolute inset-0">
-            <img src="{{ asset('contact.jpg') }}" 
-                 alt="Contact Us KKN-Go" 
+            <img src="{{ asset('contact.jpg') }}"
+                 alt="Contact Us Lapangku"
                  class="w-full h-full object-cover">
             {{-- overlay gradient - lebih gelap di bawah --}}
             <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/70"></div>
         </div>
-        
+
         {{-- content - text di kiri bawah --}}
         <div class="relative h-full">
             <div class="container mx-auto px-6 h-full flex items-end pb-20">
                 <div class="max-w-4xl">
-                    <h1 class="text-6xl md:text-7xl lg:text-8xl font-black text-white leading-tight tracking-tight mb-4">
+                    <h1 class="text-6xl md:text-7xl lg:text-8xl font-black leading-tight tracking-tight drop-shadow-2xl mb-4" style="font-family: 'Montserrat', 'Poppins', 'Space Grotesk', sans-serif; font-weight: 900; color: #FFFFFF; text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);">
                         Contact Us
                     </h1>
-                    <p class="text-xl md:text-2xl text-white/90 font-medium">
-                        Ingin Berkolaborasi Dengan KKN-Go? Hubungi Kami Di Sini.
+                    <p class="text-xl md:text-2xl font-medium drop-shadow-lg" style="color: #FFFFFF;">
+                        Ingin Berkolaborasi Dengan Lapangku? Hubungi Kami Di Sini.
                     </p>
                 </div>
             </div>
@@ -198,7 +198,7 @@
     </section>
 
     {{-- team section - MINIMALIS --}}
-    <section class="py-24 bg-gray-50">
+    <section class="py-24" style="background-color: #ffffff; background-image: radial-gradient(at 15% 15%, rgba(99, 102, 241, 0.15) 0px, transparent 50%), radial-gradient(at 85% 20%, rgba(236, 72, 153, 0.12) 0px, transparent 50%), radial-gradient(at 25% 75%, rgba(59, 130, 246, 0.15) 0px, transparent 50%), radial-gradient(at 75% 85%, rgba(168, 85, 247, 0.12) 0px, transparent 50%), radial-gradient(at 50% 50%, rgba(147, 51, 234, 0.1) 0px, transparent 50%);">
         <div class="container mx-auto px-6">
             
             {{-- section header --}}
@@ -206,7 +206,7 @@
                 <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Tim Kami Siap Membantu</h2>
                 <div class="w-20 h-1 bg-blue-600 mx-auto mb-6"></div>
                 <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                    Hubungi tim kami untuk informasi lebih lanjut mengenai platform KKN-GO dan layanan yang tersedia.
+                    Hubungi tim kami untuk informasi lebih lanjut mengenai platform Lapangku dan layanan yang tersedia.
                 </p>
             </div>
 

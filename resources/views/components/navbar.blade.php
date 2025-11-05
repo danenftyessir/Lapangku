@@ -171,8 +171,8 @@
 
             {{-- mobile menu button --}}
             <div class="md:hidden flex items-center">
-                <button @click="mobileMenuOpen = !mobileMenuOpen" 
-                        type="button" 
+                <button @click="mobileMenuOpen = !mobileMenuOpen"
+                        type="button"
                         class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 transition-colors">
                     <span class="sr-only">Open main menu</span>
                     <svg class="h-6 w-6" :class="{'hidden': mobileMenuOpen, 'block': !mobileMenuOpen}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -187,8 +187,8 @@
     </div>
 
     {{-- mobile menu dengan styling --}}
-    <div class="md:hidden bg-white border-t border-gray-200 shadow-lg" 
-         x-show="mobileMenuOpen" 
+    <div class="md:hidden bg-white border-t border-gray-200 shadow-lg"
+         x-show="mobileMenuOpen"
          x-transition:enter="transition ease-out duration-200"
          x-transition:enter-start="opacity-0 -translate-y-2"
          x-transition:enter-end="opacity-100 translate-y-0"
@@ -268,22 +268,22 @@
                     </button>
                 </form>
             @else
-                <a href="{{ route('about') }}" 
+                <a href="{{ route('about') }}"
                    class="block px-4 py-3 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors {{ request()->routeIs('about') ? 'text-blue-600 bg-blue-50' : '' }}">
                     About Us
                 </a>
-                <a href="{{ route('contact') }}" 
+                <a href="{{ route('contact') }}"
                    class="block px-4 py-3 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors {{ request()->routeIs('contact') ? 'text-blue-600 bg-blue-50' : '' }}">
                     Contact
                 </a>
-                
+
                 <div class="border-t border-gray-200 my-2"></div>
-                
-                <a href="{{ route('login') }}" 
+
+                <a href="{{ route('login') }}"
                    class="block px-4 py-3 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors">
                     Login
                 </a>
-                <a href="{{ route('register') }}" 
+                <a href="{{ route('register') }}"
                    class="block px-4 py-3 rounded-md text-base font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors">
                     Register
                 </a>
