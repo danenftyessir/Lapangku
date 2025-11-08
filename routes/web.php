@@ -25,6 +25,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\Auth\ValidationController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\PriceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,7 +46,10 @@ use App\Http\Controllers\ContactController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // about us page
-Route::get('/about', [AboutController::class, 'index'])->name('about'); 
+Route::get('/about', [AboutController::class, 'index'])->name('about');
+
+// price/pricing page
+Route::get('/price', [PriceController::class, 'index'])->name('price');
 
 // contact page
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');

@@ -29,19 +29,39 @@ class Institution extends Model
         'logo_path',
         'pic_name',
         'pic_position',
+        'pic_phone',
         'verification_document_path',
         'website',
         'description',
+        // Legacy verification
         'is_verified',
         'verified_at',
+        // AI Verification
+        'verification_status',
+        'verification_score',
+        'verification_confidence',
+        'verified_by',
+        'rejection_reason',
+        // Subscription
+        'subscription_status',
+        'subscription_package_id',
+        'subscription_started_at',
+        'subscription_expires_at',
     ];
 
     /**
      * attributes yang di-cast ke tipe data tertentu
      */
     protected $casts = [
+        // Legacy
         'is_verified' => 'boolean',
         'verified_at' => 'datetime',
+        // AI Verification
+        'verification_score' => 'float',
+        'verification_confidence' => 'float',
+        // Subscription
+        'subscription_started_at' => 'datetime',
+        'subscription_expires_at' => 'datetime',
     ];
 
     /**
@@ -82,6 +102,30 @@ class Institution extends Model
     public function projects()
     {
         return $this->hasMany(Project::class);
+    }
+
+    /**
+     * relasi ke verification_documents
+     */
+    public function verificationDocuments()
+    {
+        return $this->hasMany(VerificationDocument::class);
+    }
+
+    /**
+     * relasi ke subscription_package
+     */
+    public function subscriptionPackage()
+    {
+        return $this->belongsTo(SubscriptionPackage::class, 'subscription_package_id');
+    }
+
+    /**
+     * relasi ke verifier (user who verified)
+     */
+    public function verifier()
+    {
+        return $this->belongsTo(User::class, 'verified_by');
     }
 
     /**
@@ -196,5 +240,115 @@ class Institution extends Model
     public function getCompletedProjectsAttribute()
     {
         return $this->projects()->where('status', 'completed')->count();
+    }
+
+    /**
+     * Verification status constants
+     */
+    const STATUS_PENDING_VERIFICATION = 'pending_verification';
+    const STATUS_NEEDS_REVIEW = 'needs_review';
+    const STATUS_PENDING_PAYMENT = 'pending_payment';
+    const STATUS_ACTIVE = 'active';
+    const STATUS_SUSPENDED = 'suspended';
+    const STATUS_REJECTED = 'rejected';
+
+    /**
+     * Subscription status constants
+     */
+    const SUBSCRIPTION_PENDING_PAYMENT = 'pending_payment';
+    const SUBSCRIPTION_ACTIVE = 'active';
+    const SUBSCRIPTION_EXPIRED = 'expired';
+    const SUBSCRIPTION_CANCELLED = 'cancelled';
+    const SUBSCRIPTION_SUSPENDED = 'suspended';
+
+    /**
+     * Check if institution is pending verification
+     */
+    public function isPendingVerification(): bool
+    {
+        return $this->verification_status === self::STATUS_PENDING_VERIFICATION;
+    }
+
+    /**
+     * Check if institution needs review
+     */
+    public function needsReview(): bool
+    {
+        return $this->verification_status === self::STATUS_NEEDS_REVIEW;
+    }
+
+    /**
+     * Check if institution is pending payment
+     */
+    public function isPendingPayment(): bool
+    {
+        return $this->verification_status === self::STATUS_PENDING_PAYMENT;
+    }
+
+    /**
+     * Check if institution is active
+     */
+    public function isActive(): bool
+    {
+        return $this->verification_status === self::STATUS_ACTIVE;
+    }
+
+    /**
+     * Check if institution is rejected
+     */
+    public function isRejected(): bool
+    {
+        return $this->verification_status === self::STATUS_REJECTED;
+    }
+
+    /**
+     * Check if subscription is active
+     */
+    public function hasActiveSubscription(): bool
+    {
+        return $this->subscription_status === self::SUBSCRIPTION_ACTIVE
+            && $this->subscription_expires_at
+            && $this->subscription_expires_at->isFuture();
+    }
+
+    /**
+     * Check if subscription is expired
+     */
+    public function hasExpiredSubscription(): bool
+    {
+        return $this->subscription_status === self::SUBSCRIPTION_EXPIRED
+            || ($this->subscription_expires_at && $this->subscription_expires_at->isPast());
+    }
+
+    /**
+     * Get verification status badge color
+     */
+    public function getVerificationStatusBadgeColor(): string
+    {
+        return match($this->verification_status) {
+            self::STATUS_ACTIVE => 'success',
+            self::STATUS_PENDING_VERIFICATION => 'warning',
+            self::STATUS_NEEDS_REVIEW => 'info',
+            self::STATUS_PENDING_PAYMENT => 'primary',
+            self::STATUS_SUSPENDED => 'secondary',
+            self::STATUS_REJECTED => 'danger',
+            default => 'secondary',
+        };
+    }
+
+    /**
+     * Get verification status label
+     */
+    public function getVerificationStatusLabel(): string
+    {
+        return match($this->verification_status) {
+            self::STATUS_ACTIVE => 'Aktif',
+            self::STATUS_PENDING_VERIFICATION => 'Menunggu Verifikasi',
+            self::STATUS_NEEDS_REVIEW => 'Perlu Review Manual',
+            self::STATUS_PENDING_PAYMENT => 'Menunggu Pembayaran',
+            self::STATUS_SUSPENDED => 'Ditangguhkan',
+            self::STATUS_REJECTED => 'Ditolak',
+            default => 'Tidak Diketahui',
+        };
     }
 }

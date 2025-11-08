@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\ValidationController;
 use App\Http\Controllers\Student\BrowseProblemsController;
+use App\Http\Controllers\API\DocumentVerificationController;
 use App\Models\Regency;
 use App\Models\Province;
 
@@ -124,7 +125,7 @@ Route::get('/provinces', function () {
 */
 
 Route::middleware('auth:sanctum')->group(function () {
-    
+
     // get current user info
     // GET /api/user
     Route::get('/user', function (Request $request) {
@@ -133,10 +134,27 @@ Route::middleware('auth:sanctum')->group(function () {
             'user' => $request->user()
         ]);
     });
-    
-    // additional API endpoints bisa ditambahkan di sini
-    // contoh: notifikasi real-time, chat, dll.
-    
+
+    // ========================================
+    // AI DOCUMENT VERIFICATION ROUTES (Feature 1)
+    // ========================================
+
+    // Upload verification documents
+    // POST /api/institutions/{id}/documents
+    Route::post('/institutions/{id}/documents', [DocumentVerificationController::class, 'uploadDocuments']);
+
+    // Trigger AI verification
+    // POST /api/ai/verify-documents
+    Route::post('/ai/verify-documents', [DocumentVerificationController::class, 'verifyDocuments']);
+
+    // Get verification status
+    // GET /api/institutions/{id}/verification-status
+    Route::get('/institutions/{id}/verification-status', [DocumentVerificationController::class, 'getVerificationStatus']);
+
+    // Get detailed verification result
+    // GET /api/ai/verification/{verificationId}
+    Route::get('/ai/verification/{verificationId}', [DocumentVerificationController::class, 'getVerificationResult']);
+
 });
 
 /*

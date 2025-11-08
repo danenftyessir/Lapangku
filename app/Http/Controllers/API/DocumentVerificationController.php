@@ -5,7 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\VerificationDocument;
-use App\Services\AI\AIDocumentVerificationService;
+use App\Services\AIDocumentVerificationService;
+use App\Services\SupabaseStorageService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,10 +17,14 @@ use Illuminate\Support\Facades\Validator;
 class DocumentVerificationController extends Controller
 {
     protected AIDocumentVerificationService $verificationService;
+    protected SupabaseStorageService $storageService;
 
-    public function __construct(AIDocumentVerificationService $verificationService)
-    {
+    public function __construct(
+        AIDocumentVerificationService $verificationService,
+        SupabaseStorageService $storageService
+    ) {
         $this->verificationService = $verificationService;
+        $this->storageService = $storageService;
     }
 
     /**
@@ -68,13 +73,22 @@ class DocumentVerificationController extends Controller
 
                     // Store file in Supabase
                     $path = "verification_documents/{$institutionId}/" . $type . '_' . time() . '.' . $file->getClientOriginalExtension();
-                    Storage::disk('supabase')->put($path, file_get_contents($file));
+
+                    // Upload to Supabase storage
+                    $this->storageService->uploadFile(
+                        $path,
+                        file_get_contents($file),
+                        $file->getMimeType()
+                    );
+
+                    // Get public URL
+                    $fileUrl = $this->storageService->getPublicUrl($path);
 
                     // Create verification document record
                     $verificationDoc = VerificationDocument::create([
                         'institution_id' => $institutionId,
                         'document_type' => $type,
-                        'file_url' => $path,
+                        'file_url' => $fileUrl,
                         'file_name' => $file->getClientOriginalName(),
                         'file_size' => $file->getSize(),
                         'mime_type' => $file->getMimeType(),
@@ -144,77 +158,14 @@ class DocumentVerificationController extends Controller
         }
 
         try {
-            // Prepare documents for verification
-            $documentsToVerify = $documents->map(function ($doc) {
-                return [
-                    'type' => $doc->document_type,
-                    'path' => $doc->file_url,
-                    'id' => $doc->id
-                ];
-            })->toArray();
-
-            // Institution data for cross-validation
-            $institutionData = [
-                'name' => $institution->name,
-                'type' => $institution->type,
-                'pic_name' => $institution->pic_name,
-                'email' => $institution->email,
-            ];
-
             // Call AI verification service
-            $verificationResult = $this->verificationService->verifyDocuments($documentsToVerify, $institutionData);
-
-            // Update verification documents with AI results
-            DB::beginTransaction();
-
-            foreach ($documents as $doc) {
-                $docType = $doc->document_type;
-                $docResult = $verificationResult['documents'][$docType] ?? null;
-
-                if ($docResult) {
-                    $doc->update([
-                        'ai_verification_id' => $verificationResult['verification_id'],
-                        'ai_status' => $docResult['status'],
-                        'ai_score' => $docResult['score'],
-                        'ai_confidence' => $docResult['confidence'],
-                        'ai_flags' => $docResult['flags'] ?? [],
-                        'ai_extracted_data' => $docResult['extracted_data'] ?? [],
-                        'ai_reasoning' => $docResult['reasoning'] ?? '',
-                        'ai_processed_at' => now(),
-                    ]);
-                }
-            }
-
-            // Update institution verification status
-            $institution->update([
-                'verification_status' => $verificationResult['decision'],
-                'verification_score' => $verificationResult['score'],
-                'verification_confidence' => $verificationResult['confidence'],
-                'verified_at' => now(),
-            ]);
-
-            // If approved, potentially set to pending_payment
-            if ($verificationResult['decision'] === 'approved') {
-                $institution->update([
-                    'verification_status' => 'pending_payment',
-                    'is_verified' => true,
-                ]);
-            }
-
-            DB::commit();
+            // The service will handle all document analysis and institution status update
+            $verificationResult = $this->verificationService->verifyInstitutionDocuments($institution);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Documents verified successfully',
-                'data' => [
-                    'verification_id' => $verificationResult['verification_id'],
-                    'status' => $verificationResult['decision'],
-                    'score' => $verificationResult['score'],
-                    'confidence' => $verificationResult['confidence'],
-                    'reasoning' => $verificationResult['reasoning'],
-                    'flags' => $verificationResult['flags'],
-                    'processed_at' => $verificationResult['processed_at'],
-                ]
+                'data' => $verificationResult
             ], 200);
 
         } catch (\Exception $e) {

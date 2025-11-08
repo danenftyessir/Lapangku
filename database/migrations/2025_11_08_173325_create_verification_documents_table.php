@@ -13,18 +13,18 @@ return new class extends Migration
     {
         Schema::create('verification_documents', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('institution_id')->constrained()->onDelete('cascade');
+            $table->foreignId('institution_id')->constrained('institutions')->onDelete('cascade');
 
-            // Document Info
-            $table->string('document_type'); // 'official_letter', 'logo', 'pic_identity', 'npwp'
+            // Document info
+            $table->string('document_type', 50); // 'official_letter', 'logo', 'pic_identity', 'npwp'
             $table->string('file_url');
-            $table->string('file_name')->nullable();
+            $table->string('file_name');
             $table->bigInteger('file_size')->nullable();
             $table->string('mime_type', 100)->nullable();
 
-            // AI Analysis Results
+            // AI Analysis
             $table->string('ai_verification_id')->nullable();
-            $table->string('ai_status')->nullable(); // 'approved', 'needs_review', 'rejected'
+            $table->string('ai_status', 50)->nullable(); // 'approved', 'needs_review', 'rejected'
             $table->decimal('ai_score', 5, 2)->nullable();
             $table->decimal('ai_confidence', 3, 2)->nullable();
             $table->json('ai_flags')->nullable();
@@ -32,9 +32,9 @@ return new class extends Migration
             $table->text('ai_reasoning')->nullable();
             $table->timestamp('ai_processed_at')->nullable();
 
-            // Human Review (if needed)
+            // Human Review
             $table->boolean('human_reviewed')->default(false);
-            $table->string('human_status')->nullable();
+            $table->string('human_status', 50)->nullable();
             $table->text('human_notes')->nullable();
             $table->foreignId('reviewed_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamp('reviewed_at')->nullable();
@@ -42,10 +42,8 @@ return new class extends Migration
             $table->timestamps();
 
             // Indexes
-            $table->index('institution_id');
-            $table->index('document_type');
+            $table->index(['institution_id', 'document_type']);
             $table->index('ai_status');
-            $table->index('human_reviewed');
         });
     }
 
