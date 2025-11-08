@@ -4,8 +4,99 @@
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
 
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* import file css lainnya */
+@import './auth.css';
+@import './auth-student.css';
+@import './auth-institution.css';
+@import './navbar-dropdown.css';
+@import './friends.css';
+
+/* Navbar Z-Index Fix */
+nav,
+header,
+.navbar,
+[role="navigation"] {
+    position: relative;
+    z-index: 1000 !important;
+}
+
+nav *,
+header *,
+.navbar * {
+    position: relative;
+}
+
+/* Dropdown menu navbar */
+.dropdown-menu,
+[role="menu"] {
+    z-index: 1001 !important;
+}
+
+/* ===============================================
+   AVATAR UNIVERSAL STYLES
+   =============================================== */
+
+/* Avatar Circle - base styling untuk semua avatar */
+.avatar-circle {
+    border-radius: 50%;
+}
+
+/* Avatar Circle untuk IMG tag - foto profil */
+img.avatar-circle {
+    object-fit: cover;
+    display: block;
+}
+
+/* Avatar Circle untuk DIV tag - inisial nama */
+div.avatar-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    text-transform: uppercase;
+    background: linear-gradient(to bottom right, #3b82f6, #10b981);
+    color: white;
+}
+
+/* Avatar sizes */
+.avatar-xs {
+    width: 32px;
+    height: 32px;
+    font-size: 0.75rem;
+}
+
+.avatar-sm {
+    width: 40px;
+    height: 40px;
+    font-size: 0.875rem;
+}
+
+.avatar-md {
+    width: 72px;
+    height: 72px;
+    font-size: 1.5rem;
+}
+
+.avatar-lg {
+    width: 96px;
+    height: 96px;
+    font-size: 2rem;
+}
+
+.avatar-xl {
+    width: 128px;
+    height: 128px;
+    font-size: 2.5rem;
 }

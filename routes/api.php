@@ -4,7 +4,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\ValidationController;
 use App\Http\Controllers\Student\BrowseProblemsController;
-use App\Http\Controllers\API\DocumentVerificationController;
 use App\Models\Regency;
 use App\Models\Province;
 
@@ -125,7 +124,7 @@ Route::get('/provinces', function () {
 */
 
 Route::middleware('auth:sanctum')->group(function () {
-
+    
     // get current user info
     // GET /api/user
     Route::get('/user', function (Request $request) {
@@ -134,38 +133,10 @@ Route::middleware('auth:sanctum')->group(function () {
             'user' => $request->user()
         ]);
     });
-
-    /*
-    |--------------------------------------------------------------------------
-    | AI Document Verification Routes
-    |--------------------------------------------------------------------------
-    | Routes untuk AI verification dokumen institusi
-    */
-
-    // Upload verification documents
-    // POST /api/institutions/{id}/documents
-    Route::post('/institutions/{id}/documents', [DocumentVerificationController::class, 'uploadDocuments'])
-         ->name('api.institutions.documents.upload');
-
-    // Get verification status for institution
-    // GET /api/institutions/{id}/verification-status
-    Route::get('/institutions/{id}/verification-status', [DocumentVerificationController::class, 'getVerificationStatus'])
-         ->name('api.institutions.verification.status');
-
-    // AI Document Verification endpoints
-    Route::prefix('ai')->name('api.ai.')->group(function () {
-
-        // Verify documents using AI
-        // POST /api/ai/verify-documents
-        Route::post('/verify-documents', [DocumentVerificationController::class, 'verifyDocuments'])
-             ->name('verify.documents');
-
-        // Get verification result by verification ID
-        // GET /api/ai/verification/{verificationId}
-        Route::get('/verification/{verificationId}', [DocumentVerificationController::class, 'getVerificationResult'])
-             ->name('verification.result');
-    });
-
+    
+    // additional API endpoints bisa ditambahkan di sini
+    // contoh: notifikasi real-time, chat, dll.
+    
 });
 
 /*
