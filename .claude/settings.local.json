@@ -9,7 +9,8 @@
       "Bash(docker rm:*)",
       "Bash(docker-compose:*)",
       "Bash(php artisan:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(composer dump-autoload:*)"
     ],
     "deny": [],
     "ask": []

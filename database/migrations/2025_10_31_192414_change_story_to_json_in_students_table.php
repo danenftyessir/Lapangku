@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -11,22 +12,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Check if column 'stories' already exists
-        if (!Schema::hasColumn('students', 'stories')) {
-            Schema::table('students', function (Blueprint $table) {
-                // rename story to stories and change to JSON
-                if (Schema::hasColumn('students', 'story')) {
-                    $table->renameColumn('story', 'stories');
-                }
-            });
-        }
+        // TEMPORARY SKIP - This migration causes transaction issues
+        // Will be fixed later or run manually via Supabase SQL Editor
 
-        Schema::table('students', function (Blueprint $table) {
-            // change stories to JSON type if it exists
-            if (Schema::hasColumn('students', 'stories')) {
-                $table->json('stories')->nullable()->change();
-            }
-        });
+        // Column 'stories' already exists as TEXT from previous migration
+        // If JSON type is needed, run this SQL in Supabase:
+        // ALTER TABLE students ALTER COLUMN stories TYPE json USING CASE WHEN stories = '' THEN NULL ELSE stories::json END;
     }
 
     /**
