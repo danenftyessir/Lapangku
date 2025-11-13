@@ -23,6 +23,7 @@ class SupabaseStorageService
 
     public function __construct()
     {
+        // Use new config location
         $this->projectId = config('services.supabase.project_id');
         $this->serviceKey = config('services.supabase.service_key');
         $this->bucketName = config('services.supabase.bucket', 'kkngo-storage');
@@ -31,7 +32,13 @@ class SupabaseStorageService
         // cek apakah supabase dikonfigurasi dengan benar
         $this->useSupabase = !empty($this->projectId) && !empty($this->serviceKey);
 
-        if (config('app.debug') && !$this->useSupabase) {
+        // PRODUCTION: Supabase MUST be configured
+        if (config('app.env') === 'production' && !$this->useSupabase) {
+            throw new \Exception('Supabase configuration is REQUIRED in production! Check SUPABASE_PROJECT_ID and SUPABASE_SERVICE_KEY in .env');
+        }
+
+        // LOCAL: Allow fallback to local storage with warning
+        if (config('app.env') === 'local' && !$this->useSupabase) {
             Log::warning("⚠️ Supabase config tidak lengkap - akan menggunakan local storage!", [
                 'project_id' => $this->projectId ? '✅' : '❌',
                 'service_key' => $this->serviceKey ? '✅' : '❌',
@@ -185,11 +192,18 @@ class SupabaseStorageService
                 return asset('storage/' . str_replace('public/', '', $path));
             }
 
-            // path tanpa 'public/' kemungkinan dari Supabase yang belum ter-upload
-            // return placeholder instead of broken link
-            Log::warning("⚠️ getPublicUrl: Path mismatch - expected local storage format", [
+            // Check if file exists in local storage without 'public/' prefix
+            // Files uploaded locally are stored as: storage/app/public/institutions/...
+            // But path in DB is: institutions/...
+            if (Storage::disk('public')->exists($path)) {
+                Log::debug("✅ getPublicUrl: File found in local storage", ['path' => $path]);
+                return asset('storage/' . $path);
+            }
+
+            // File not found - return placeholder
+            Log::warning("⚠️ getPublicUrl: File not found in local storage", [
                 'path' => $path,
-                'expected_format' => 'public/...',
+                'checked_location' => storage_path('app/public/' . $path)
             ]);
 
             return $this->getPlaceholderAvatar();
@@ -363,6 +377,38 @@ class SupabaseStorageService
         $extension = $file->getClientOriginalExtension();
         $filename = "institution-{$institutionId}-verification-" . time() . '.' . $extension;
         $path = 'institutions/verifications/' . $filename;
+
+        return $this->uploadFile($file, $path);
+    }
+
+    /**
+     * upload KTP penanggung jawab institusi ke supabase
+     *
+     * @param UploadedFile $file file KTP
+     * @param int $institutionId ID institusi
+     * @return string|false path file yang berhasil diupload atau false jika gagal
+     */
+    public function uploadKTP(UploadedFile $file, int $institutionId)
+    {
+        $extension = $file->getClientOriginalExtension();
+        $filename = "institution-{$institutionId}-ktp-" . time() . '.' . $extension;
+        $path = 'institutions/ktp/' . $filename;
+
+        return $this->uploadFile($file, $path);
+    }
+
+    /**
+     * upload NPWP institusi ke supabase
+     *
+     * @param UploadedFile $file file NPWP
+     * @param int $institutionId ID institusi
+     * @return string|false path file yang berhasil diupload atau false jika gagal
+     */
+    public function uploadNPWP(UploadedFile $file, int $institutionId)
+    {
+        $extension = $file->getClientOriginalExtension();
+        $filename = "institution-{$institutionId}-npwp-" . time() . '.' . $extension;
+        $path = 'institutions/npwp/' . $filename;
 
         return $this->uploadFile($file, $path);
     }

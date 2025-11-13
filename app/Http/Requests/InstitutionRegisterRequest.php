@@ -93,10 +93,22 @@ class InstitutionRegisterRequest extends FormRequest
                 'max:2048' // 2MB
             ],
             'verification_document' => [
-                'nullable', // Changed to nullable for API requests
+                'required',
                 'file',
                 'mimes:pdf',
                 'max:5120' // 5MB
+            ],
+            'ktp' => [
+                'required',
+                'image',
+                'mimes:jpeg,jpg,png',
+                'max:2048' // 2MB
+            ],
+            'npwp' => [
+                'required',
+                'image',
+                'mimes:jpeg,jpg,png',
+                'max:2048' // 2MB
             ],
             'website' => [
                 'nullable',
@@ -147,6 +159,14 @@ class InstitutionRegisterRequest extends FormRequest
             'verification_document.file' => 'file verifikasi tidak valid',
             'verification_document.mimes' => 'dokumen verifikasi harus berformat PDF',
             'verification_document.max' => 'ukuran dokumen maksimal 5MB',
+            'ktp.required' => 'KTP wajib diunggah',
+            'ktp.image' => 'file KTP harus berupa gambar',
+            'ktp.mimes' => 'KTP harus berformat jpeg, jpg, atau png',
+            'ktp.max' => 'ukuran KTP maksimal 2MB',
+            'npwp.required' => 'NPWP wajib diunggah',
+            'npwp.image' => 'file NPWP harus berupa gambar',
+            'npwp.mimes' => 'NPWP harus berformat jpeg, jpg, atau png',
+            'npwp.max' => 'ukuran NPWP maksimal 2MB',
             'website.url' => 'format url website tidak valid',
             'description.max' => 'deskripsi maksimal 1000 karakter'
         ];
@@ -207,6 +227,8 @@ class InstitutionRegisterRequest extends FormRequest
             'phone_number' => 'nomor telepon',
             'logo' => 'logo instansi',
             'verification_document' => 'dokumen verifikasi',
+            'ktp' => 'KTP',
+            'npwp' => 'NPWP',
             'website' => 'website',
             'description' => 'deskripsi'
         ];

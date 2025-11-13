@@ -54,4 +54,12 @@ return [
         'api_url' => env('COHERE_API_URL', 'https://api.cohere.ai'),
     ],
 
+    'supabase' => [
+        'project_id' => env('SUPABASE_PROJECT_ID'),
+        'service_key' => env('SUPABASE_SERVICE_KEY'),
+        'anon_key' => env('SUPABASE_ANON_KEY'),
+        'url' => env('SUPABASE_URL'),
+        'bucket' => env('SUPABASE_BUCKET', 'kkngo-storage'),
+    ],
+
 ];

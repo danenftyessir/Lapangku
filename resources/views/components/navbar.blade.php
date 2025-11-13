@@ -5,11 +5,8 @@
 
             {{-- logo --}}
             <div class="flex-shrink-0 flex items-center">
-                <a href="{{ route('home') }}" class="flex items-center space-x-3 group">
-                    <img src="{{ asset('kkn-go-logo.png') }}" alt="KKN-GO Logo" class="h-10 w-auto transition-transform duration-300 group-hover:scale-110">
-                    <span class="text-2xl font-bold bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 bg-clip-text text-transparent" style="font-family: 'Space Grotesk', sans-serif;">
-                        Lapangku
-                    </span>
+                <a href="{{ route('home') }}" class="flex items-center group">
+                    <img src="{{ asset('karsa-logo.png') }}" alt="Karsa - Karya Anak Bangsa" class="h-10 w-auto transition-transform duration-300 group-hover:scale-110">
                 </a>
             </div>
 

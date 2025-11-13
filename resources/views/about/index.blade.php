@@ -17,7 +17,7 @@
                     {{-- background image --}}
                     <div class="absolute inset-0">
                         <img src="{{ asset('mahasiswa-about.jpeg') }}"
-                             alt="About Us Lapangku"
+                             alt="About Us Karsa"
                              class="w-full h-full object-cover">
                         {{-- overlay gradient - lebih gelap di bawah --}}
                         <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/70"></div>
@@ -43,7 +43,7 @@
                         <div class="max-w-5xl mx-auto text-center">
                             {{-- heading --}}
                             <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-8 leading-tight">
-                                Perkenalkan, <span class="text-blue-600">Lapangku</span>
+                                Perkenalkan, <span class="text-blue-600">Karsa</span>
                             </h2>
 
                             {{-- intro paragraph --}}
@@ -75,7 +75,7 @@
                                 Tiga Masalah Krusial Yang Kami Selesaikan
                             </h2>
                             <p class="text-base md:text-lg text-gray-600">
-                                Lapangku hadir untuk mentransformasi ekosistem KKN Indonesia
+                                Karsa hadir untuk mentransformasi ekosistem KKN Indonesia
                             </p>
                         </div>
 
@@ -148,7 +148,7 @@
                         {{-- background image --}}
                         <div class="absolute inset-0">
                             <img src="{{ asset('about.jpg') }}"
-                                 alt="Lapangku Background"
+                                 alt="Karsa Background"
                                  class="w-full h-full object-cover">
                             {{-- mesh gradient overlay biru-ungu --}}
                             <div class="absolute inset-0 bg-gradient-to-br from-blue-600/90 via-indigo-700/85 to-purple-800/90"></div>
@@ -157,11 +157,11 @@
                             <div class="mb-6">
                                 <div class="w-16 h-1 bg-white rounded-full mb-6"></div>
                                 <h2 class="text-3xl md:text-4xl font-bold leading-tight mb-6 text-white">
-                                    Lapangku Dari Tahun Ke Tahun
+                                    Karsa Dari Tahun Ke Tahun
                                 </h2>
                             </div>
                             <p class="text-lg md:text-xl leading-relaxed mb-8 text-blue-100">
-                                Lapangku berdiri sebagai katalisator dalam menciptakan ekosistem Kuliah Kerja Nyata 4.0 di Indonesia. Kami adalah laboratorium inovasi sekaligus wadah sinergi antara mahasiswa dan pemerintah daerah.
+                                Karsa berdiri sebagai katalisator dalam menciptakan ekosistem Kuliah Kerja Nyata 4.0 di Indonesia. Kami adalah laboratorium inovasi sekaligus wadah sinergi antara mahasiswa dan pemerintah daerah.
                             </p>
                             <div class="grid grid-cols-3 gap-6 mt-8">
                                 <div class="text-center">
@@ -199,10 +199,10 @@
                                     Dari Mahasiswa, Untuk Indonesia
                                 </h2>
                                 <p class="text-base md:text-lg text-gray-700 leading-relaxed mb-4">
-                                    Menyongsong usia ke-2 tahun, Lapangku terus tumbuh dan bertransformasi. Dari pelabuhan kecil di masa lalu hingga platform digital masa kini, Lapangku telah menghadapi beragam tantangan dan membuka banyak peluang.
+                                    Menyongsong usia ke-2 tahun, Karsa terus tumbuh dan bertransformasi. Dari pelabuhan kecil di masa lalu hingga platform digital masa kini, Karsa telah menghadapi beragam tantangan dan membuka banyak peluang.
                                 </p>
                                 <p class="text-base md:text-lg text-gray-700 leading-relaxed">
-                                    Saatnya kita melangkah bersama untuk membentuk Lapangku sebagai <span class="font-bold text-blue-600 italic">revolusi mahasiswa</span> yang lebih inklusif dan siap bersaing di pentas nasional.
+                                    Saatnya kita melangkah bersama untuk membentuk Karsa sebagai <span class="font-bold text-blue-600 italic">revolusi mahasiswa</span> yang lebih inklusif dan siap bersaing di pentas nasional.
                                 </p>
                             </div>
                         </div>

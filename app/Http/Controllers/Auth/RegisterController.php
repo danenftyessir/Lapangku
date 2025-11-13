@@ -12,11 +12,14 @@ use App\Models\University;
 use App\Models\Province;
 use App\Models\Regency;
 use App\Services\SupabaseStorageService;
+use App\Mail\InstitutionRegistered;
+use App\Jobs\ValidateInstitutionDocumentsJob;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Auth\Events\Registered;
 
 /**
@@ -194,7 +197,7 @@ class RegisterController extends Controller
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Registrasi Berhasil! Selamat Datang Di KKN-GO.',
+                    'message' => 'Registrasi Berhasil! Selamat Datang Di Karsa.',
                     'redirect_url' => route('student.dashboard') // PERBAIKAN: gunakan redirect_url bukan redirect
                 ], 200);
             }
@@ -202,7 +205,7 @@ class RegisterController extends Controller
             // redirect ke dashboard student dengan pesan sukses
             return redirect()
                 ->route('student.dashboard')
-                ->with('success', 'Selamat Datang Di KKN-GO! Akun Anda Berhasil Dibuat. Silakan Lengkapi Profil Dan Mulai Mencari Proyek KKN Yang Sesuai Dengan Minat Anda.');
+                ->with('success', 'Selamat Datang Di Karsa! Akun Anda Berhasil Dibuat. Silakan Lengkapi Profil Dan Mulai Mencari Proyek KKN Yang Sesuai Dengan Minat Anda.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -286,7 +289,7 @@ class RegisterController extends Controller
                 try {
                     $file = $request->file('verification_document');
                     $uploadedPath = $this->storageService->uploadVerificationDocument($file, $institution->id);
-                    
+
                     if ($uploadedPath) {
                         $institution->update(['verification_document_path' => $uploadedPath]);
                         Log::info('Verification document uploaded successfully', [
@@ -296,12 +299,47 @@ class RegisterController extends Controller
                     }
                 } catch (\Exception $e) {
                     Log::error('Error uploading verification document: ' . $e->getMessage());
-                    // tidak perlu throw exception, dokumen verifikasi bersifat required di validasi
                 }
             }
-            
+
+            // upload KTP menggunakan SupabaseStorageService
+            if ($request->hasFile('ktp')) {
+                try {
+                    $file = $request->file('ktp');
+                    $uploadedPath = $this->storageService->uploadKTP($file, $institution->id);
+
+                    if ($uploadedPath) {
+                        $institution->update(['ktp_path' => $uploadedPath]);
+                        Log::info('KTP uploaded successfully', [
+                            'institution_id' => $institution->id,
+                            'path' => $uploadedPath
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Error uploading KTP: ' . $e->getMessage());
+                }
+            }
+
+            // upload NPWP menggunakan SupabaseStorageService
+            if ($request->hasFile('npwp')) {
+                try {
+                    $file = $request->file('npwp');
+                    $uploadedPath = $this->storageService->uploadNPWP($file, $institution->id);
+
+                    if ($uploadedPath) {
+                        $institution->update(['npwp_path' => $uploadedPath]);
+                        Log::info('NPWP uploaded successfully', [
+                            'institution_id' => $institution->id,
+                            'path' => $uploadedPath
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Error uploading NPWP: ' . $e->getMessage());
+                }
+            }
+
             DB::commit();
-            
+
             // picu event bahwa user baru telah terdaftar
             event(new Registered($user));
 
@@ -313,44 +351,53 @@ class RegisterController extends Controller
                 'username' => $user->username
             ]);
 
-            // auto-login user setelah registrasi berhasil
-            Auth::login($user);
-            
-            // refresh session untuk memuat data terbaru termasuk logo
-            $user = $user->fresh(['institution']);
-            Auth::setUser($user);
+            // Kirim email notifikasi registrasi
+            try {
+                Mail::to($institution->email)->send(new InstitutionRegistered($institution));
+                Log::info('Registration email sent successfully to: ' . $institution->email);
+            } catch (\Exception $e) {
+                Log::error('Failed to send registration email: ' . $e->getMessage());
+                // Tidak throw exception, registrasi tetap berhasil meski email gagal
+            }
+
+            // Dispatch AI validation job (async background process)
+            try {
+                ValidateInstitutionDocumentsJob::dispatch($institution)
+                    ->onQueue('validations')
+                    ->delay(now()->addSeconds(30)); // Delay 30 detik untuk memastikan files fully uploaded
+
+                Log::info('✅ AI validation job dispatched', [
+                    'institution_id' => $institution->id
+                ]);
+            } catch (\Exception $e) {
+                Log::error('❌ Failed to dispatch AI validation job: ' . $e->getMessage());
+                // Registrasi tetap berhasil, admin akan manual review
+            }
+
+            // TIDAK auto-login user - biarkan menunggu verifikasi AI
+            // User akan login manual setelah akun diverifikasi
 
             // cek apakah request adalah AJAX
             if ($request->expectsJson() || $request->ajax()) {
-                // buat token untuk API authentication
-                $token = $user->createToken('api-token')->plainTextToken;
-
                 return response()->json([
                     'success' => true,
-                    'message' => 'Registrasi Berhasil! Akun Instansi Anda Sedang Menunggu Verifikasi Admin.',
+                    'message' => 'Ajuan registrasi berhasil! Cek email berkala',
                     'data' => [
-                        'token' => $token,
                         'institution' => [
                             'id' => $institution->id,
                             'name' => $institution->name,
                             'email' => $institution->email,
-                            'verification_status' => $institution->verification_status ?? 'pending_verification',
+                            'verification_status' => $institution->verification_status ?? 'pending_ai_validation',
                         ],
-                        'user' => [
-                            'id' => $user->id,
-                            'name' => $user->name,
-                            'email' => $user->email,
-                            'user_type' => $user->user_type,
-                        ],
-                        'redirect_url' => route('institution.dashboard')
+                        'redirect_url' => route('home')
                     ]
                 ], 201);
             }
 
-            // redirect ke dashboard institution dengan pesan sukses
+            // redirect ke homepage dengan pesan sukses
             return redirect()
-                ->route('institution.dashboard')
-                ->with('success', 'Selamat Datang Di KKN-GO! Akun Instansi Anda Berhasil Dibuat Dan Sedang Menunggu Verifikasi Admin. Anda Akan Menerima Notifikasi Email Setelah Akun Diverifikasi.');
+                ->route('home')
+                ->with('success', 'Ajuan registrasi berhasil! Cek email berkala untuk info verifikasi.');
 
         } catch (\Exception $e) {
             DB::rollBack();

@@ -301,7 +301,7 @@
         <!-- Platform Info -->
         <div class="text-center mb-16" data-aos="fade-up">
             <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                Kenapa Memilih Lapangku?
+                Kenapa Memilih Karsa?
             </h2>
             <p class="text-xl text-gray-600 max-w-3xl mx-auto">
                 Platform terpadu yang memudahkan kolaborasi antara mahasiswa dan instansi untuk program KKN yang berdampak
@@ -400,7 +400,7 @@
                         Tetaplah bergerak dan berdampak walau Anda berbeda, karena Tuhan tidak menciptakan dunia untuk satu jenis makhluknya saja.
                     </blockquote>
                 </div>
-                <p class="text-lg text-gray-500 italic mt-6">Lapangku</p>
+                <p class="text-lg text-gray-500 italic mt-6">Karsa - Karya Anak Bangsa</p>
             </div>
         </div>
     </div>
@@ -475,6 +475,60 @@ projects.forEach(project => {
                 </p>
             </div>
         `);
+});
+
+// Toast notification function
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = 'fixed top-20 right-6 px-6 py-4 rounded-lg shadow-2xl text-white transform transition-all duration-300 z-[9999] flex items-center space-x-3';
+
+    const colors = { success: 'bg-green-600', error: 'bg-red-600', info: 'bg-blue-600' };
+    const icons = {
+        success: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
+        error: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
+        info: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'
+    };
+
+    toast.classList.add(colors[type] || colors.info);
+    toast.innerHTML = `
+        <div class="flex-shrink-0">${icons[type]}</div>
+        <p class="font-semibold">${message}</p>
+        <button onclick="this.parentElement.remove()" class="ml-4">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    `;
+
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(100px)';
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(0)';
+    });
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100px)';
+        setTimeout(() => toast.remove(), 300);
+    }, 6000);
+}
+
+// Tampilkan toast dari flash message
+document.addEventListener('DOMContentLoaded', function() {
+    @if(session('success'))
+        setTimeout(() => showToast("{{ session('success') }}", 'success'), 300);
+    @endif
+
+    @if(session('error'))
+        setTimeout(() => showToast("{{ session('error') }}", 'error'), 300);
+    @endif
+
+    @if(session('info'))
+        setTimeout(() => showToast("{{ session('info') }}", 'info'), 300);
+    @endif
 });
 </script>
 @endpush

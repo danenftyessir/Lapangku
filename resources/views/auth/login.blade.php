@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Login - KKN-GO</title>
+    <title>Login - Karsa</title>
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
@@ -77,8 +77,8 @@
             <div class="w-full max-w-md">
                 <!-- logo -->
                 <div class="flex justify-center mb-8 mt-8">
-                    <img src="{{ asset('kkn-go-logo.png') }}" 
-                         alt="KKN-GO Logo" 
+                    <img src="{{ asset('karsa-logo.png') }}"
+                         alt="Karsa - Karya Anak Bangsa"
                          class="h-20 w-auto">
                 </div>
                 
@@ -86,7 +86,7 @@
                 <div class="mb-8 text-center">
                     <h2 class="text-4xl font-bold text-gray-900 mb-3">Welcome Back!</h2>
                     <p class="text-gray-600 text-lg">
-                        Sign in to your KKN-GO account and continue making impact in your community.
+                        Sign in to your Karsa account and continue making impact in your community.
                     </p>
                 </div>
 

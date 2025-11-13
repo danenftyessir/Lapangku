@@ -31,12 +31,19 @@ class Institution extends Model
         'pic_position',
         'pic_phone',
         'verification_document_path',
+        'ktp_path',
+        'npwp_path',
         'website',
         'description',
         // Legacy verification
         'is_verified',
         'verified_at',
-        // AI Verification
+        // AI Validation
+        'ai_validation_score',
+        'ai_validation_report',
+        'ai_validation_status',
+        'ai_validation_notes',
+        'ai_validated_at',
         'verification_status',
         'verification_score',
         'verification_confidence',
@@ -51,7 +58,11 @@ class Institution extends Model
         // Legacy
         'is_verified' => 'boolean',
         'verified_at' => 'datetime',
-        // AI Verification
+        // AI Validation
+        'ai_validation_score' => 'decimal:2',
+        'ai_validation_report' => 'array',
+        'ai_validated_at' => 'datetime',
+        // AI Verification (Legacy compatibility)
         'verification_score' => 'float',
         'verification_confidence' => 'float',
     ];
@@ -110,6 +121,14 @@ class Institution extends Model
     public function verifier()
     {
         return $this->belongsTo(User::class, 'verified_by');
+    }
+
+    /**
+     * relasi ke AI validation logs
+     */
+    public function aiValidationLogs()
+    {
+        return $this->hasMany(AIValidationLog::class);
     }
 
     /**
@@ -172,18 +191,82 @@ class Institution extends Model
             if (str_starts_with($this->verification_document_path, 'http')) {
                 return $this->verification_document_path;
             }
-            
+
             // cek apakah ini adalah path dari Supabase
             if (!str_starts_with($this->verification_document_path, 'public/')) {
                 $storageService = app(\App\Services\SupabaseStorageService::class);
                 return $storageService->getPublicUrl($this->verification_document_path);
             }
-            
+
             // fallback ke local storage
             return asset('storage/' . str_replace('public/', '', $this->verification_document_path));
         }
-        
+
         return null;
+    }
+
+    /**
+     * get KTP URL
+     */
+    public function getKtpUrl(): ?string
+    {
+        if ($this->ktp_path) {
+            // cek apakah path sudah berupa URL lengkap
+            if (str_starts_with($this->ktp_path, 'http')) {
+                return $this->ktp_path;
+            }
+
+            // cek apakah ini adalah path dari Supabase
+            if (!str_starts_with($this->ktp_path, 'public/')) {
+                $storageService = app(\App\Services\SupabaseStorageService::class);
+                return $storageService->getPublicUrl($this->ktp_path);
+            }
+
+            // fallback ke local storage
+            return asset('storage/' . str_replace('public/', '', $this->ktp_path));
+        }
+
+        return null;
+    }
+
+    /**
+     * accessor untuk ktp_url
+     */
+    public function getKtpUrlAttribute(): ?string
+    {
+        return $this->getKtpUrl();
+    }
+
+    /**
+     * get NPWP URL
+     */
+    public function getNpwpUrl(): ?string
+    {
+        if ($this->npwp_path) {
+            // cek apakah path sudah berupa URL lengkap
+            if (str_starts_with($this->npwp_path, 'http')) {
+                return $this->npwp_path;
+            }
+
+            // cek apakah ini adalah path dari Supabase
+            if (!str_starts_with($this->npwp_path, 'public/')) {
+                $storageService = app(\App\Services\SupabaseStorageService::class);
+                return $storageService->getPublicUrl($this->npwp_path);
+            }
+
+            // fallback ke local storage
+            return asset('storage/' . str_replace('public/', '', $this->npwp_path));
+        }
+
+        return null;
+    }
+
+    /**
+     * accessor untuk npwp_url
+     */
+    public function getNpwpUrlAttribute(): ?string
+    {
+        return $this->getNpwpUrl();
     }
 
     /**

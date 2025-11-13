@@ -176,7 +176,7 @@
         {{-- background image --}}
         <div class="absolute inset-0">
             <img src="{{ asset('contact.jpg') }}"
-                 alt="Contact Us Lapangku"
+                 alt="Contact Us Karsa"
                  class="w-full h-full object-cover">
             {{-- overlay gradient - lebih gelap di bawah --}}
             <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/70"></div>
@@ -190,7 +190,7 @@
                         Contact Us
                     </h1>
                     <p class="text-xl md:text-2xl font-medium drop-shadow-lg" style="color: #FFFFFF;">
-                        Ingin Berkolaborasi Dengan Lapangku? Hubungi Kami Di Sini.
+                        Ingin Berkolaborasi Dengan Karsa? Hubungi Kami Di Sini.
                     </p>
                 </div>
             </div>
@@ -206,7 +206,7 @@
                 <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Tim Kami Siap Membantu</h2>
                 <div class="w-20 h-1 bg-blue-600 mx-auto mb-6"></div>
                 <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                    Hubungi tim kami untuk informasi lebih lanjut mengenai platform Lapangku dan layanan yang tersedia.
+                    Hubungi tim kami untuk informasi lebih lanjut mengenai platform Karsa dan layanan yang tersedia.
                 </p>
             </div>
 

@@ -4,9 +4,9 @@
         {{-- logo dan tagline --}}
         <div class="flex flex-col items-center mb-12 space-y-6">
             <div class="flex items-center gap-3">
-                <img src="{{ asset('kkn-go-logo.png') }}" alt="KKN-Go Logo" class="h-12 w-auto">
+                <img src="{{ asset('karsa-logo.png') }}" alt="Karsa - Karya Anak Bangsa" class="h-12 w-auto">
                 <span class="text-3xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent" style="font-family: 'Space Grotesk', sans-serif;">
-                    KKN-GO
+                    Karsa
                 </span>
             </div>
             <p class="text-gray-400 text-center max-w-2xl text-base leading-relaxed">
@@ -33,7 +33,7 @@
         {{-- copyright --}}
         <div class="border-t border-gray-800 pt-8">
             <p class="text-center text-sm text-gray-500 leading-relaxed max-w-3xl mx-auto">
-                Hak cipta © {{ date('Y') }} KKN-Go. Seluruh hak cipta dilindungi undang-undang dan terdaftar pada Direktorat Jendral Kekayaan Intelektual Republik Indonesia.
+                Hak cipta © {{ date('Y') }} Karsa - Karya Anak Bangsa. Seluruh hak cipta dilindungi undang-undang dan terdaftar pada Direktorat Jendral Kekayaan Intelektual Republik Indonesia.
             </p>
         </div>
     </div>

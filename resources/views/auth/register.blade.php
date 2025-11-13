@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Register - KKN-GO</title>
+    <title>Register - Karsa</title>
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -27,8 +27,8 @@
         <div class="w-full max-w-2xl">
             <!-- logo -->
             <div class="flex justify-center mb-8 mt-12">
-                <img src="{{ asset('kkn-go-logo.png') }}" 
-                     alt="KKN-GO Logo" 
+                <img src="{{ asset('karsa-logo.png') }}"
+                     alt="Karsa - Karya Anak Bangsa"
                      class="h-24 w-auto transform hover:scale-105 transition-transform">
             </div>
 
@@ -36,7 +36,7 @@
             <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
                 <!-- header -->
                 <div class="text-center mb-10">
-                    <h1 class="text-4xl font-bold text-gray-900 mb-3">Bergabung dengan KKN-GO</h1>
+                    <h1 class="text-4xl font-bold text-gray-900 mb-3">Bergabung dengan Karsa</h1>
                     <p class="text-lg text-gray-600">Pilih jenis akun yang sesuai dengan anda</p>
                 </div>
 

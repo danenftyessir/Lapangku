@@ -342,3 +342,35 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
 Route::get('/institution/{id}', [InstitutionProfileController::class, 'showPublic'])
     ->where('id', '[0-9]+')
     ->name('institution.public');
+
+/*
+|--------------------------------------------------------------------------
+| Admin Routes - Institution Review & Management
+|--------------------------------------------------------------------------
+*/
+
+use App\Http\Controllers\Admin\InstitutionReviewController;
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Dashboard admin
+    Route::get('/dashboard', [InstitutionReviewController::class, 'dashboard'])->name('dashboard');
+
+    // Institution review routes
+    Route::prefix('institutions')->name('institutions.')->group(function () {
+        // List institutions by status
+        Route::get('/pending', [InstitutionReviewController::class, 'pending'])->name('pending');
+        Route::get('/manual-review', [InstitutionReviewController::class, 'manualReview'])->name('manual-review');
+        Route::get('/approved', [InstitutionReviewController::class, 'approved'])->name('approved');
+        Route::get('/rejected', [InstitutionReviewController::class, 'rejected'])->name('rejected');
+
+        // Review institution detail
+        Route::get('/{id}/review', [InstitutionReviewController::class, 'review'])->name('review');
+
+        // Approve/Reject actions
+        Route::post('/{id}/approve', [InstitutionReviewController::class, 'approve'])->name('approve');
+        Route::post('/{id}/reject', [InstitutionReviewController::class, 'reject'])->name('reject');
+
+        // Validation logs
+        Route::get('/{id}/validation-logs', [InstitutionReviewController::class, 'validationLogs'])->name('validation-logs');
+    });
+});

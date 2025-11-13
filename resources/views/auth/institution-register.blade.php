@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Daftar Sebagai Instansi - KKN-GO</title>
+    <title>Daftar Sebagai Instansi - Karsa</title>
     
     @vite(['resources/css/app.css'])
     
@@ -328,7 +328,7 @@
             <div class="w-full max-w-4xl">
                 {{-- logo & header --}}
                 <div class="text-center mb-8">
-                    <img src="{{ asset('kkn-go-logo.png') }}" alt="KKN-GO Logo" class="h-24 mx-auto mb-6">
+                    <img src="{{ asset('karsa-logo.png') }}" alt="Karsa - Karya Anak Bangsa" class="h-24 mx-auto mb-6">
                     <h1 class="text-4xl font-bold text-gray-900 mb-3">Daftar Sebagai Instansi</h1>
                     <p class="text-gray-600 mb-4">Mulai Posting Masalah Dan Temukan Mahasiswa KKN Terbaik</p>
                     <div class="inline-flex items-center gap-2 text-sm">
@@ -727,8 +727,55 @@
                                            style="padding: 0.5rem 1rem;"
                                            autocomplete="off"
                                            required>
+                                    <p class="text-xs text-gray-500 mt-1">Format: PDF, Maksimal 5MB (Surat Tugas/SK/Akta/Surat Pengesahan)</p>
                                     <p class="error-message hidden" id="error-verification_document"></p>
                                     @error('verification_document')
+                                        <p class="error-message">
+                                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
+
+                                {{-- KTP PIC --}}
+                                <div class="form-field-group">
+                                    <label for="ktp" class="form-label required">KTP Penanggung Jawab</label>
+                                    <input type="file"
+                                           id="ktp"
+                                           name="ktp"
+                                           accept="image/jpeg,image/jpg,image/png"
+                                           class="form-input"
+                                           style="padding: 0.5rem 1rem;"
+                                           autocomplete="off"
+                                           required>
+                                    <p class="text-xs text-gray-500 mt-1">Format: JPG, JPEG, PNG - Maksimal 2MB</p>
+                                    <p class="error-message hidden" id="error-ktp"></p>
+                                    @error('ktp')
+                                        <p class="error-message">
+                                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
+
+                                {{-- NPWP Instansi --}}
+                                <div class="form-field-group">
+                                    <label for="npwp" class="form-label required">NPWP Instansi</label>
+                                    <input type="file"
+                                           id="npwp"
+                                           name="npwp"
+                                           accept="image/jpeg,image/jpg,image/png"
+                                           class="form-input"
+                                           style="padding: 0.5rem 1rem;"
+                                           autocomplete="off"
+                                           required>
+                                    <p class="text-xs text-gray-500 mt-1">Format: JPG, JPEG, PNG - Maksimal 2MB</p>
+                                    <p class="error-message hidden" id="error-npwp"></p>
+                                    @error('npwp')
                                         <p class="error-message">
                                             <svg fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
@@ -954,53 +1001,11 @@
     // current step tracker
     let currentStep = 1;
 
-    // validasi per step sebelum lanjut
-    async function nextStep(step) {
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        
-        // validasi step sekarang sebelum lanjut
-        const formData = new FormData(document.getElementById('institutionRegisterForm'));
-        formData.append('step', currentStep);
-        
-        loadingOverlay.style.display = 'flex';
-
-        try {
-            const response = await fetch('/api/public/validate/institution/step', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                }
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                // tampilkan error
-                if (data.errors) {
-                    let errorMessages = [];
-                    Object.keys(data.errors).forEach(key => {
-                        errorMessages.push(...data.errors[key]);
-                    });
-                    alert('Mohon Lengkapi Data Berikut:\n\n' + errorMessages.join('\n'));
-                } else {
-                    alert('Terjadi Kesalahan Saat Validasi. Silakan Coba Lagi.');
-                }
-                loadingOverlay.style.display = 'none';
-                return;
-            }
-
-            // validasi berhasil, pindah ke step selanjutnya
-            showStep(step);
-            currentStep = step;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            loadingOverlay.style.display = 'none';
-
-        } catch (error) {
-            console.error('Validation error:', error);
-            alert('Tidak Dapat Terhubung Ke Server. Periksa Koneksi Internet Anda.');
-            loadingOverlay.style.display = 'none';
-        }
+    // navigasi bebas antar step tanpa validasi
+    function nextStep(step) {
+        showStep(step);
+        currentStep = step;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function prevStep(step) {
@@ -1109,7 +1114,7 @@
                 const errorFields = Object.keys(data.errors);
                 const step1Fields = ['institution_name', 'institution_type', 'official_email'];
                 const step2Fields = ['address', 'province_id', 'regency_id'];
-                const step3Fields = ['pic_name', 'pic_position', 'phone_number', 'logo', 'verification_document', 'website', 'description'];
+                const step3Fields = ['pic_name', 'pic_position', 'phone_number', 'logo', 'verification_document', 'ktp', 'npwp', 'website', 'description'];
                 const step4Fields = ['username', 'password', 'password_confirmation'];
 
                 let errorStep = 4;
@@ -1175,7 +1180,7 @@
         const errorFields = @json($errors->keys());
         const step1Fields = ['institution_name', 'institution_type', 'official_email'];
         const step2Fields = ['address', 'province_id', 'regency_id'];
-        const step3Fields = ['pic_name', 'pic_position', 'phone_number', 'logo', 'verification_document', 'website', 'description'];
+        const step3Fields = ['pic_name', 'pic_position', 'phone_number', 'logo', 'verification_document', 'ktp', 'npwp', 'website', 'description'];
         const step4Fields = ['username', 'password', 'password_confirmation'];
         
         let errorStep = 1;

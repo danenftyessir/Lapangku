@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Daftar Sebagai Mahasiswa - KKN-GO</title>
+    <title>Daftar Sebagai Mahasiswa - Karsa</title>
     
     @vite(['resources/css/app.css'])
     
@@ -326,8 +326,8 @@
             <div class="w-full max-w-4xl">
                 {{-- logo & header --}}
                 <div class="text-center mb-8">
-                    <img src="{{ asset('kkn-go-logo.png') }}" 
-                         alt="KKN-GO Logo" 
+                    <img src="{{ asset('karsa-logo.png') }}"
+                         alt="Karsa - Karya Anak Bangsa"
                          class="h-20 w-auto mx-auto mb-4">
                     <h1 class="text-3xl font-bold text-gray-900 mb-2">Daftar Sebagai Mahasiswa</h1>
                     <p class="text-gray-600">Bergabunglah Dengan Platform KKN Terbesar Di Indonesia</p>
@@ -802,7 +802,7 @@
                                            class="mt-1 w-4 h-4 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500"
                                            required>
                                     <label for="terms" class="ml-3 text-sm text-gray-600">
-                                        Saya Setuju Dengan <a href="#" class="text-yellow-600 hover:text-yellow-700 font-semibold">Syarat Dan Ketentuan</a> Serta <a href="#" class="text-yellow-600 hover:text-yellow-700 font-semibold">Kebijakan Privasi</a> KKN-GO
+                                        Saya Setuju Dengan <a href="#" class="text-yellow-600 hover:text-yellow-700 font-semibold">Syarat Dan Ketentuan</a> Serta <a href="#" class="text-yellow-600 hover:text-yellow-700 font-semibold">Kebijakan Privasi</a> Karsa
                                     </label>
                                 </div>
                             </div>

@@ -317,7 +317,7 @@ function showShareModal() {
     
     const portfolioUrl = '{{ route("profile.public", $username) }}';
     const studentName = '{{ $student->first_name }} {{ $student->last_name }}';
-    const shareText = `Lihat portfolio saya di KKN-GO: ${studentName}`;
+    const shareText = `Lihat portfolio saya di Karsa: ${studentName}`;
     modal.innerHTML = `
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full transform transition-all duration-300" 
              style="transform: scale(0.9);"
@@ -448,7 +448,7 @@ function shareToWhatsApp(url, text) {
 
 // share ke email
 function shareToEmail(url, text) {
-    const subject = 'Portfolio KKN-GO';
+    const subject = 'Portfolio Karsa';
     const body = `${text}\n\n${url}`;
     const emailUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.location.href = emailUrl;
