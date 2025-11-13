@@ -4,58 +4,46 @@
 @section('title', 'Browse Problems')
 
 @push('styles')
+{{-- Import Google Font - Space Grotesk for Hero --}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+{{-- Leaflet CSS - Load BEFORE any scripts --}}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
 <link rel="stylesheet" href="{{ asset('css/browse-problems.css') }}">
 <style>
-    .hero-browse-background {
+    /* Hero section style mirip dashboard */
+    .marketplace-hero-browse {
         position: relative;
-        background-image: url('/dashboard-student.jpg');
+        background-image:
+            linear-gradient(135deg, rgba(99, 102, 241, 0.35) 0%, rgba(129, 140, 248, 0.30) 50%, rgba(156, 163, 175, 0.25) 100%),
+            url('/dashboard-student.jpg');
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
+        min-height: 480px;
     }
-    
-    .hero-browse-background::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        /* gradient lebih transparan - opacity dikurangi dari 0.75-0.85 jadi 0.45-0.55 */
-        background: linear-gradient(
-            135deg, 
-            rgba(37, 99, 235, 0.50) 0%,     /* biru lebih transparan */
-            rgba(59, 130, 246, 0.45) 35%,   /* biru medium transparan */
-            rgba(16, 185, 129, 0.45) 65%,   /* hijau medium transparan */
-            rgba(5, 150, 105, 0.50) 100%    /* hijau transparan */
-        );
-        backdrop-filter: blur(1px);  /* blur dikurangi dari 2px ke 1px */
+
+    .hero-title-browse {
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        letter-spacing: -0.02em;
     }
-    
-    .stats-card-modern {
-        background: rgba(255, 255, 255, 0.20);  /* sedikit lebih solid dari sebelumnya */
-        backdrop-filter: blur(16px);             /* blur diperkuat untuk clarity */
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .stats-card-modern:hover {
-        background: rgba(255, 255, 255, 0.30);
-        transform: translateY(-4px);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-    }
-    
+
     .text-shadow-strong {
-        text-shadow: 
+        text-shadow:
             0 2px 4px rgba(0, 0, 0, 0.4),
-            0 4px 8px rgba(0, 0, 0, 0.3),
-            0 1px 2px rgba(0, 0, 0, 0.5);  /* multiple layers untuk readability maksimal */
+            0 4px 8px rgba(0, 0, 0, 0.3);
     }
-    
+
     .browse-fade-in {
         animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
+
     @keyframes fadeInUp {
         from {
             opacity: 0;
@@ -66,83 +54,142 @@
             transform: translateY(0);
         }
     }
+
+    /* Background style seperti homepage */
+    .gradient-mesh-bg {
+        background-color: #ffffff;
+        background-image:
+            radial-gradient(at 15% 15%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+            radial-gradient(at 85% 20%, rgba(236, 72, 153, 0.12) 0px, transparent 50%),
+            radial-gradient(at 25% 75%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+            radial-gradient(at 75% 85%, rgba(168, 85, 247, 0.12) 0px, transparent 50%),
+            radial-gradient(at 50% 50%, rgba(147, 51, 234, 0.1) 0px, transparent 50%);
+    }
+
+    /* Pagination styling - minimalist tegas */
+    .pagination-section nav {
+        display: inline-flex;
+        background-color: white;
+        border-radius: 0.5rem;
+        padding: 0.375rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .pagination-section .flex {
+        gap: 0.25rem;
+        align-items: center;
+    }
+
+    /* Base styling untuk semua pagination items */
+    .pagination-section a,
+    .pagination-section span {
+        min-width: 2.25rem;
+        height: 2.25rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #6b7280 !important;
+        background-color: transparent !important;
+        border: none !important;
+        border-radius: 0.375rem;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    /* Hover state */
+    .pagination-section a:hover {
+        background-color: #f3f4f6 !important;
+        color: #111827 !important;
+    }
+
+    /* Active/current page */
+    .pagination-section .relative span[aria-current="page"] {
+        background-color: #6366f1 !important;
+        color: white !important;
+        font-weight: 700;
+        box-shadow: 0 2px 4px rgba(99, 102, 241, 0.25);
+    }
+
+    /* Disabled state (Previous/Next when not available) */
+    .pagination-section span[aria-disabled="true"] {
+        color: #d1d5db !important;
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    .pagination-section span[aria-disabled="true"]:hover {
+        background-color: transparent !important;
+    }
+
+    /* Arrow icons styling */
+    .pagination-section svg {
+        width: 1.125rem;
+        height: 1.125rem;
+    }
+
+    /* Hide "Previous" and "Next" text, show only arrows */
+    .pagination-section a > span:not(.sr-only),
+    .pagination-section span > span:not(.sr-only) {
+        display: none;
+    }
+
+    /* Show only arrow SVGs */
+    .pagination-section svg {
+        display: block !important;
+    }
+
+    /* Hide "Showing X to Y of Z results" text */
+    .pagination-section p,
+    .pagination-section nav + p,
+    .pagination-section p.text-sm {
+        display: none !important;
+    }
+
+    /* Responsive: stack vertically on mobile */
+    @media (max-width: 640px) {
+        #problems-pagination {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        #problems-pagination .pagination-section {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+    }
 </style>
 @endpush
 
 @section('content')
-<div class="min-h-screen bg-gray-50">
+<div class="min-h-screen gradient-mesh-bg">
     
-    {{-- hero section dengan background --}}
-    <div class="hero-browse-background text-white py-16 md:py-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="browse-fade-in">
-                <h1 class="text-4xl md:text-5xl font-bold mb-4 text-shadow-strong">
-                    Jelajahi Proyek KKN
-                </h1>
-                <p class="text-xl md:text-2xl text-white text-shadow-strong max-w-3xl">
-                    Temukan proyek KKN yang sesuai dengan minat dan keahlian Anda
-                </p>
-            </div>
-            
-            {{-- stats cards --}}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mt-10 browse-fade-in" style="animation-delay: 0.2s;">
-                <div class="stats-card-modern rounded-xl p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <div class="text-4xl md:text-5xl font-bold text-white text-shadow-strong">
-                                {{ $totalProblems ?? 0 }}
-                            </div>
-                            <div class="text-white text-shadow-strong mt-2">
-                                Total Proyek
-                            </div>
-                        </div>
-                        <div class="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
+    {{-- marketplace-style hero section mirip dashboard --}}
+    <section class="marketplace-hero-browse text-white relative flex items-center justify-center">
+        <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10 w-full">
+            <div class="max-w-4xl mx-auto text-center">
+                <div class="browse-fade-in">
+                    {{-- Judul dan deskripsi --}}
+                    <h1 class="hero-title-browse text-4xl md:text-6xl font-bold mb-6 text-white leading-tight" style="color: white !important;">
+                        Jelajahi Proyek KKN
+                    </h1>
 
-                <div class="stats-card-modern rounded-xl p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <div class="text-4xl md:text-5xl font-bold text-white text-shadow-strong">
-                                {{ $sdgCategories ?? 0 }}
-                            </div>
-                            <div class="text-white text-shadow-strong mt-2">
-                                Kategori SDG
-                            </div>
-                        </div>
-                        <div class="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="stats-card-modern rounded-xl p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <div class="text-4xl md:text-5xl font-bold text-white text-shadow-strong">
-                                {{ $provinces->count() ?? 0 }}
-                            </div>
-                            <div class="text-white text-shadow-strong mt-2">
-                                Provinsi Tersedia
-                            </div>
-                        </div>
-                        <div class="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
-                        </div>
-                    </div>
+                    <p class="text-lg md:text-xl leading-relaxed max-w-2xl mx-auto font-medium" style="color: #ffffff !important; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.4);">
+                        Temukan proyek KKN yang sesuai dengan minat dan keahlian Anda
+                    </p>
                 </div>
             </div>
         </div>
-    </div>
+
+        {{-- straight divider --}}
+        <div class="absolute bottom-0 left-0 right-0 bg-white" style="height: 4px; margin: 0;"></div>
+    </section>
 
     {{-- main content --}}
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -198,31 +245,25 @@
                     </form>
                 </div>
 
-                {{-- results count & view switcher --}}
-                <div class="flex items-center justify-between mb-6">
-                    <p class="text-gray-700">
-                        Menampilkan <span class="font-semibold">{{ $problems->firstItem() ?? 0 }}</span> 
-                        dari <span class="font-semibold">{{ $problems->total() }}</span> proyek
-                    </p>
-                    
-                    {{-- view switcher buttons --}}
+                {{-- view switcher buttons only --}}
+                <div class="flex items-center justify-end mb-6">
                     <div class="flex items-center gap-2">
-                        <button id="grid-view-btn" 
-                                onclick="switchView('grid')" 
+                        <button id="grid-view-btn"
+                                onclick="switchView('grid')"
                                 class="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 active-view bg-blue-50 border-blue-500">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
                             </svg>
                         </button>
-                        <button id="list-view-btn" 
-                                onclick="switchView('list')" 
+                        <button id="list-view-btn"
+                                onclick="switchView('list')"
                                 class="p-2 border border-gray-300 rounded-lg hover:bg-gray-50">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                             </svg>
                         </button>
-                        <button id="map-view-btn" 
-                                onclick="switchView('map')" 
+                        <button id="map-view-btn"
+                                onclick="switchView('map')"
                                 class="p-2 border border-gray-300 rounded-lg hover:bg-gray-50">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
@@ -236,19 +277,26 @@
                     @include('student.browse-problems.components.problems-grid')
                 </div>
 
-                <div id="list-view" class="view-content hidden">
+                <div id="list-view" class="view-content hidden space-y-6">
                     @foreach($problems as $problem)
                         @include('student.browse-problems.components.problem-card-list', ['problem' => $problem])
                     @endforeach
                 </div>
 
                 <div id="map-view" class="view-content hidden">
-                    @include('student.browse-problems.components.map-view')
+                    @include('student.browse-problems.components.map-view', ['mapProblems' => $allProblems])
                 </div>
 
-                {{-- pagination --}}
-                <div class="mt-8">
-                    {{ $problems->links() }}
+                {{-- results count & pagination combined --}}
+                <div id="problems-pagination" class="flex items-center justify-between mt-8">
+                    <p class="text-gray-700 text-sm font-semibold">
+                        Menampilkan <span class="font-bold">{{ $problems->firstItem() ?? 0 }}</span>
+                        dari <span class="font-bold">{{ $problems->total() }}</span> proyek
+                    </p>
+
+                    <div class="pagination-section">
+                        {{ $problems->links() }}
+                    </div>
                 </div>
             </main>
         </div>
@@ -257,6 +305,10 @@
 @endsection
 
 @push('scripts')
+{{-- Leaflet JS - Load BEFORE Alpine.js initializes map --}}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
 <script src="{{ asset('js/pages/browse-problems.js') }}"></script>
 <script>
     // toggle filter section
@@ -267,14 +319,68 @@
 
     // view switcher
     function switchView(view) {
+        // hide all views
         document.querySelectorAll('.view-content').forEach(el => el.classList.add('hidden'));
+
+        // reset button styles
         document.querySelectorAll('[id$="-view-btn"]').forEach(btn => {
             btn.classList.remove('active-view', 'bg-blue-50', 'border-blue-500');
         });
+
+        // show active view
         document.getElementById(view + '-view').classList.remove('hidden');
         const activeBtn = document.getElementById(view + '-view-btn');
         activeBtn.classList.add('active-view', 'bg-blue-50', 'border-blue-500');
+
+        // show/hide pagination (hidden untuk map view, visible untuk grid & list)
+        const paginationSection = document.getElementById('problems-pagination');
+        if (view === 'map') {
+            paginationSection.classList.add('hidden');
+        } else {
+            paginationSection.classList.remove('hidden');
+        }
+
+        // save view mode ke localStorage
+        localStorage.setItem('browseProblemsView', view);
+
+        // update semua pagination links untuk include view parameter
+        updatePaginationLinks(view);
+
+        // trigger event untuk map view
+        if (view === 'map') {
+            window.dispatchEvent(new CustomEvent('mapViewActivated'));
+        }
     }
+
+    // update pagination links dengan view parameter
+    function updatePaginationLinks(view) {
+        // skip untuk map view (tidak ada pagination)
+        if (view === 'map') return;
+
+        const paginationSection = document.getElementById('problems-pagination');
+        if (!paginationSection) return;
+
+        const links = paginationSection.querySelectorAll('a');
+        links.forEach(link => {
+            const url = new URL(link.href);
+            url.searchParams.set('view', view);
+            link.href = url.toString();
+        });
+    }
+
+    // restore view mode saat page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // check URL parameter dulu
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlView = urlParams.get('view');
+
+        // kalau ada view di URL, gunakan itu
+        // kalau tidak, gunakan dari localStorage
+        // default: grid
+        const savedView = urlView || localStorage.getItem('browseProblemsView') || 'grid';
+
+        switchView(savedView);
+    });
 
     async function toggleWishlist(problemId, button) {
         button.disabled = true;

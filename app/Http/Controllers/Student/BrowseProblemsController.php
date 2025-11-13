@@ -146,12 +146,15 @@ class BrowseProblemsController extends Controller
             }
         ]);
 
+        // get ALL problems for map view (before pagination)
+        $allProblems = (clone $query)->get();
+
         // pagination dengan query string preserved
         $problems = $query->paginate(12)->withQueryString();
 
         // data untuk dropdown filter
         $provinces = Province::orderBy('name')->get(['id', 'name']);
-        
+
         // regencies hanya dimuat jika province dipilih
         $regencies = [];
         if ($request->filled('province_id')) {
@@ -165,6 +168,7 @@ class BrowseProblemsController extends Controller
 
         return view('student.browse-problems.index', compact(
             'problems',
+            'allProblems',
             'provinces',
             'regencies',
             'totalProblems',

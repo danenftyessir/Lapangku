@@ -10,14 +10,32 @@
     <div class="flex items-center justify-between mb-6">
         <h3 class="text-lg font-bold text-gray-900">Filter</h3>
         @if(request()->hasAny(['search', 'province_id', 'regency_id', 'difficulty', 'sdg_categories', 'duration']))
-            <button type="button" 
+            <button type="button"
                     @click="clearFilters()"
                     class="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors">
                 Reset
             </button>
         @endif
     </div>
-    
+
+    {{-- Statistik Informasi --}}
+    <div class="mb-6 pb-6 border-b border-gray-200">
+        <div class="space-y-3">
+            <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                <span class="text-sm text-gray-700 font-medium">Total Proyek</span>
+                <span class="text-lg font-bold text-blue-600">{{ $totalProblems ?? 0 }}</span>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                <span class="text-sm text-gray-700 font-medium">Kategori SDG</span>
+                <span class="text-lg font-bold text-purple-600">{{ $sdgCategories ?? 0 }}</span>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                <span class="text-sm text-gray-700 font-medium">Provinsi Tersedia</span>
+                <span class="text-lg font-bold text-green-600">{{ $provinces->count() ?? 0 }}</span>
+            </div>
+        </div>
+    </div>
+
     <form action="{{ route('student.browse-problems.index') }}" method="GET" class="space-y-6">
         
         {{-- pencarian teks --}}

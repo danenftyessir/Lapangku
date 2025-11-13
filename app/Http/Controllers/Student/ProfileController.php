@@ -29,9 +29,9 @@ class ProfileController extends Controller
         $this->storageService = $storageService;
         $this->portfolioService = $portfolioService;
 
-        // publicView tidak memerlukan authentication (public portfolio)
-        // method lain memerlukan auth kecuali publicView
-        $this->middleware('auth')->except(['publicView']);
+        // Note: Middleware sudah diterapkan di routes/web.php
+        // - Private routes (index, edit, update, dll) dilindungi oleh middleware auth & check.user.type:student di route group
+        // - Public route (publicView) tidak memerlukan auth dan didefinisikan terpisah di luar route group
     }
 
     /**
