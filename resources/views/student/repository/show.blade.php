@@ -198,17 +198,33 @@
                     </div>
                 </div>
 
-                {{-- download button --}}
+                {{-- download and view buttons --}}
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 fade-in-up" style="animation-delay: 0.3s;">
-                    <h2 class="text-xl font-bold text-gray-900 mb-4">Unduh Dokumen</h2>
-                    <p class="text-gray-600 mb-6">Klik tombol di bawah untuk mengunduh dokumen ini</p>
-                    <a href="{{ route('student.repository.download', $document->id) }}" 
-                       class="download-btn inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                        </svg>
-                        <span>Unduh Dokumen ({{ strtoupper($document->file_type ?? 'PDF') }})</span>
-                    </a>
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">Akses Dokumen</h2>
+                    <p class="text-gray-600 mb-6">Lihat dokumen secara online atau unduh untuk akses offline</p>
+                    <div class="flex flex-wrap gap-3">
+                        {{-- View Online Button --}}
+                        @if($document->file_path)
+                        <a href="{{ document_url($document->file_path) }}"
+                           target="_blank"
+                           class="download-btn inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                            <span>Lihat Online</span>
+                        </a>
+                        @endif
+
+                        {{-- Download Button --}}
+                        <a href="{{ route('student.repository.download', $document->id) }}"
+                           class="download-btn inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                            </svg>
+                            <span>Unduh Dokumen ({{ strtoupper($document->file_type ?? 'PDF') }})</span>
+                        </a>
+                    </div>
                 </div>
             </div>
 

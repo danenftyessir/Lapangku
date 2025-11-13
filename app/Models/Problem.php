@@ -202,7 +202,14 @@ class Problem extends Model
      */
     public function getCoverImageAttribute()
     {
-        return $this->images()->where('is_cover', true)->first() 
+        // gunakan relationship yang sudah di-load untuk performance
+        if ($this->relationLoaded('images')) {
+            return $this->images->where('is_cover', true)->first()
+                ?? $this->images->sortBy('order')->first();
+        }
+
+        // fallback jika images belum di-load
+        return $this->images()->where('is_cover', true)->first()
             ?? $this->images()->orderBy('order')->first();
     }
 

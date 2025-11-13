@@ -52,7 +52,7 @@
                                 @endif
                                 <div>
                                     <p class="font-semibold text-gray-900">{{ $project->institution->name }}</p>
-                                    <p class="text-sm text-gray-600">{{ $project->institution->institution_type }}</p>
+                                    <p class="text-sm text-gray-600">{{ $project->institution->type }}</p>
                                 </div>
                             </div>
                         </div>
@@ -62,10 +62,10 @@
                     <div class="mt-6">
                         <div class="flex justify-between text-sm text-gray-600 mb-2">
                             <span class="font-medium">Progress Keseluruhan</span>
-                            <span class="font-bold text-gray-900">{{ $project->progress_percentage }}%</span>
+                            <span class="font-bold text-indigo-600">{{ $project->progress_percentage }}%</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-3">
-                            <div class="bg-gradient-to-r from-blue-600 to-green-600 h-3 rounded-full transition-all duration-500" 
+                            <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-3 rounded-full transition-all duration-500"
                                  style="width: {{ $project->progress_percentage }}%"></div>
                         </div>
                     </div>
@@ -156,7 +156,7 @@
                                                         <span class="font-semibold">{{ $milestone->progress_percentage }}%</span>
                                                     </div>
                                                     <div class="w-full bg-gray-200 rounded-full h-1.5">
-                                                        <div class="bg-blue-600 h-1.5 rounded-full transition-all" 
+                                                        <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-1.5 rounded-full transition-all"
                                                              style="width: {{ $milestone->progress_percentage }}%"></div>
                                                     </div>
                                                 </div>
@@ -173,8 +173,8 @@
 
                                     {{-- update button --}}
                                     @if($project->status === 'active' && $milestone->status !== 'completed')
-                                        <button @click="open = true" 
-                                                class="ml-4 px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors">
+                                        <button @click="open = true"
+                                                class="ml-4 px-3 py-1 text-sm bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors">
                                             Update
                                         </button>
                                     @endif
@@ -188,25 +188,25 @@
                                     <form @submit.prevent="updateMilestone({{ $milestone->id }}, $event)" class="space-y-3">
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1">Progress (%)</label>
-                                            <input type="number" 
-                                                   name="progress_percentage" 
-                                                   min="0" 
-                                                   max="100" 
+                                            <input type="number"
+                                                   name="progress_percentage"
+                                                   min="0"
+                                                   max="100"
                                                    value="{{ $milestone->progress_percentage }}"
-                                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1">Catatan</label>
-                                            <textarea name="notes" 
+                                            <textarea name="notes"
                                                       rows="2"
-                                                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">{{ $milestone->notes }}</textarea>
+                                                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">{{ $milestone->notes }}</textarea>
                                         </div>
                                         <div class="flex gap-2">
-                                            <button type="submit" 
-                                                    class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+                                            <button type="submit"
+                                                    class="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors">
                                                 Simpan
                                             </button>
-                                            <button type="button" 
+                                            <button type="button"
                                                     @click="open = false"
                                                     class="px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-300 transition-colors">
                                                 Batal
@@ -224,8 +224,8 @@
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="text-xl font-bold text-gray-900">Laporan Progress</h2>
                         @if($project->status === 'active')
-                            <a href="{{ route('student.projects.create-report', $project->id) }}" 
-                               class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+                            <a href="{{ route('student.projects.create-report', $project->id) }}"
+                               class="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors">
                                 + Buat Laporan
                             </a>
                         @endif
@@ -258,8 +258,8 @@
                                             </div>
                                         </div>
                                         @if($report->document_path)
-                                            <a href="{{ route('student.projects.download-report', $report->id) }}" 
-                                               class="ml-4 text-blue-600 hover:text-blue-700">
+                                            <a href="{{ route('student.projects.download-report', $report->id) }}"
+                                               class="ml-4 text-indigo-600 hover:text-indigo-700">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                                 </svg>
@@ -282,21 +282,21 @@
                     <h3 class="font-semibold text-gray-900 mb-4">Aksi</h3>
                     <div class="space-y-3">
                         @if($project->status === 'active')
-                            <a href="{{ route('student.projects.create-report', $project->id) }}" 
-                               class="block w-full text-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            <a href="{{ route('student.projects.create-report', $project->id) }}"
+                               class="block w-full text-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
                                 Buat Laporan Progress
                             </a>
-                            
+
                             @if($project->progress_percentage >= 80)
-                                <a href="{{ route('student.projects.create-final-report', $project->id) }}" 
-                                   class="block w-full text-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                                <a href="{{ route('student.projects.create-final-report', $project->id) }}"
+                                   class="block w-full text-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
                                     Submit Laporan Akhir
                                 </a>
                             @endif
                         @endif
-                        
+
                         @if($project->final_report_path)
-                            <a href="{{ asset('storage/' . $project->final_report_path) }}" 
+                            <a href="{{ asset('storage/' . $project->final_report_path) }}"
                                target="_blank"
                                class="block w-full text-center px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
                                 Download Laporan Akhir
@@ -342,6 +342,46 @@
                     </div>
                 </div>
 
+                {{-- team members / collaborators --}}
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 fade-in-up" style="animation-delay: 0.25s;">
+                    <div class="mb-4">
+                        <h3 class="font-semibold text-gray-900">Anggota Tim</h3>
+                        <p class="text-xs text-gray-500 mt-1">Mahasiswa lain yang bekerja di problem ini</p>
+                    </div>
+
+                    @if(isset($teamMembers) && $teamMembers->count() > 0)
+                        <div class="space-y-3">
+                            @foreach($teamMembers as $member)
+                                <a href="{{ route('student.friends.profile', $member->id) }}"
+                                   class="flex items-center gap-3 p-3 rounded-lg hover:bg-indigo-50 transition-colors group">
+                                    <img src="{{ $member->profile_photo_url }}"
+                                         alt="{{ $member->user->name }}"
+                                         class="w-12 h-12 rounded-full object-cover ring-2 ring-gray-200 group-hover:ring-indigo-300 transition-all">
+                                    <div class="flex-1 min-w-0">
+                                        <p class="font-semibold text-gray-900 text-sm truncate group-hover:text-indigo-600 transition-colors">
+                                            {{ $member->user->name }}
+                                        </p>
+                                        <p class="text-xs text-gray-600 truncate">
+                                            {{ $member->university->name ?? 'Universitas' }}
+                                        </p>
+                                    </div>
+                                    <svg class="w-5 h-5 text-gray-400 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </a>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-6">
+                            <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                            <p class="text-sm text-gray-600 mb-1">Anda satu-satunya yang mengerjakan problem ini</p>
+                            <p class="text-xs text-gray-500">Mahasiswa lain yang bekerja di problem yang sama akan muncul di sini</p>
+                        </div>
+                    @endif
+                </div>
+
                 {{-- impact metrics (for completed projects) --}}
                 @if($project->status === 'completed' && $project->impact_metrics)
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 fade-in-up" style="animation-delay: 0.25s;">
@@ -375,14 +415,18 @@
 <script>
 function updateMilestone(milestoneId, event) {
     const formData = new FormData(event.target);
-    
+
     fetch(`/student/projects/milestones/${milestoneId}/update`, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
             'Accept': 'application/json',
+            'Content-Type': 'application/json',
         },
-        body: formData
+        body: JSON.stringify({
+            progress_percentage: formData.get('progress_percentage'),
+            notes: formData.get('notes')
+        })
     })
     .then(response => response.json())
     .then(data => {

@@ -4,84 +4,73 @@
 @section('title', 'Knowledge Repository')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/browse-problems.css') }}">
+{{-- Import Google Font - Space Grotesk for Hero --}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
 <style>
-    /* hero section dengan background image */
-    .hero-repository-background {
+    /* Hero section style mirip applications dan projects */
+    .marketplace-hero-repository {
         position: relative;
-        background-image: url('/repo-student.jpeg');
+        background-image:
+            linear-gradient(135deg, rgba(99, 102, 241, 0.35) 0%, rgba(129, 140, 248, 0.30) 50%, rgba(156, 163, 175, 0.25) 100%),
+            url('/repo-student.jpeg');
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
-        min-height: 400px;
+        min-height: 480px;
     }
-    
-    .hero-repository-background::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(
-            135deg, 
-            rgba(37, 99, 235, 0.50) 0%,
-            rgba(59, 130, 246, 0.45) 35%,
-            rgba(16, 185, 129, 0.45) 65%,
-            rgba(5, 150, 105, 0.50) 100%
-        );
-        backdrop-filter: blur(1px);
+
+    .hero-title-repository {
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        letter-spacing: -0.02em;
     }
-    
-    /* stats cards dengan glassmorphism */
-    .stats-card-repository {
-        background: rgba(255, 255, 255, 0.20);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        will-change: transform;
-    }
-    
-    .stats-card-repository:hover {
-        background: rgba(255, 255, 255, 0.30);
-        transform: translate3d(0, -4px, 0);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-    }
-    
-    .stats-card-repository svg {
-        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-    }
-    
-    .stats-card-repository .backdrop-blur-sm {
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-    }
-    
-    /* text shadow untuk hero */
-    .text-shadow-repository {
-        text-shadow: 
+
+    .text-shadow-strong {
+        text-shadow:
             0 2px 4px rgba(0, 0, 0, 0.4),
-            0 4px 8px rgba(0, 0, 0, 0.3),
-            0 1px 2px rgba(0, 0, 0, 0.5);
+            0 4px 8px rgba(0, 0, 0, 0.3);
     }
-    
-    /* animation fade in */
+
     .repository-fade-in {
-        animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        opacity: 0;
-        will-change: transform, opacity;
+        animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
+
     @keyframes fadeInUp {
         from {
             opacity: 0;
-            transform: translate3d(0, 20px, 0);
+            transform: translateY(30px);
         }
         to {
             opacity: 1;
-            transform: translate3d(0, 0, 0);
+            transform: translateY(0);
         }
+    }
+
+    /* Background style seperti applications */
+    .gradient-mesh-bg {
+        background-color: #ffffff;
+        background-image:
+            radial-gradient(at 15% 15%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+            radial-gradient(at 85% 20%, rgba(236, 72, 153, 0.08) 0px, transparent 50%),
+            radial-gradient(at 25% 75%, rgba(59, 130, 246, 0.08) 0px, transparent 50%),
+            radial-gradient(at 75% 85%, rgba(168, 85, 247, 0.08) 0px, transparent 50%);
+    }
+
+    /* Stats item hover effect di sidebar */
+    .stats-item {
+        transition: all 0.2s ease;
+    }
+
+    .stats-item:hover {
+        transform: translateX(4px);
+    }
+
+    /* smooth scrolling */
+    html {
+        scroll-behavior: smooth;
     }
     
     /* document card styling */
@@ -150,77 +139,28 @@
 @endpush
 
 @section('content')
-<div class="min-h-screen bg-gray-50">
-    
-    {{-- hero section dengan background --}}
-    <div class="hero-repository-background">
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            
-            {{-- header --}}
-            <div class="mb-10 repository-fade-in">
-                <h1 class="text-4xl md:text-5xl font-bold mb-4 text-white text-shadow-repository">
-                    Knowledge Repository
-                </h1>
-                <p class="text-xl md:text-2xl text-white text-shadow-repository max-w-3xl">
-                    Akses Dan Pelajari Dari Dokumentasi Proyek KKN Sebelumnya
-                </p>
-            </div>
-            
-            {{-- stats cards --}}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 repository-fade-in" style="animation-delay: 0.1s;">
-                {{-- total documents --}}
-                <div class="stats-card-repository rounded-xl p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-white text-shadow-repository opacity-90 mb-1">Total Dokumen</p>
-                            <p class="text-4xl md:text-5xl font-bold text-white text-shadow-repository">
-                                {{ $stats['total_documents'] }}
-                            </p>
-                        </div>
-                        <div class="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
+<div class="min-h-screen gradient-mesh-bg">
 
-                {{-- total downloads --}}
-                <div class="stats-card-repository rounded-xl p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-white text-shadow-repository opacity-90 mb-1">Total Downloads</p>
-                            <p class="text-4xl md:text-5xl font-bold text-white text-shadow-repository">
-                                {{ number_format($stats['total_downloads']) }}
-                            </p>
-                        </div>
-                        <div class="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
+    {{-- marketplace-style hero section mirip applications dan projects --}}
+    <section class="marketplace-hero-repository text-white relative flex items-center justify-center">
+        <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10 w-full py-16">
+            <div class="max-w-4xl mx-auto text-center">
+                <div class="repository-fade-in">
+                    {{-- Judul dan deskripsi --}}
+                    <h1 class="hero-title-repository text-4xl md:text-6xl font-bold mb-6 text-white leading-tight" style="color: white !important;">
+                        Knowledge Repository
+                    </h1>
 
-                {{-- total institutions --}}
-                <div class="stats-card-repository rounded-xl p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-white text-shadow-repository opacity-90 mb-1">Instansi Terdaftar</p>
-                            <p class="text-4xl md:text-5xl font-bold text-white text-shadow-repository">
-                                {{ $stats['total_institutions'] }}
-                            </p>
-                        </div>
-                        <div class="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                            </svg>
-                        </div>
-                    </div>
+                    <p class="text-lg md:text-xl leading-relaxed max-w-2xl mx-auto font-medium" style="color: #ffffff !important; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.4);">
+                        Akses Dan Pelajari Dari Dokumentasi Proyek KKN Sebelumnya
+                    </p>
                 </div>
             </div>
         </div>
-    </div>
+
+        {{-- straight divider --}}
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-white"></div>
+    </section>
 
     {{-- main content --}}
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -231,8 +171,7 @@
             <h2 class="text-2xl font-bold text-gray-900 mb-6">Dokumen Unggulan</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 @foreach($featuredDocuments as $document)
-                <a href="{{ route('student.repository.show', $document->id) }}" 
-                   class="featured-document p-6 rounded-xl block group">
+                <div class="featured-document p-6 rounded-xl group">
                     <div class="flex items-start gap-4 mb-4">
                         <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -240,11 +179,11 @@
                             </svg>
                         </div>
                         <div class="flex-1">
-                            <h3 class="text-lg font-bold mb-2 text-gray-900 group-hover:text-blue-600 transition-colors">{{ Str::limit($document->title, 60) }}</h3>
+                            <h3 class="text-lg font-bold mb-2 text-gray-900">{{ Str::limit($document->title, 60) }}</h3>
                             <p class="text-sm text-gray-600">{{ Str::limit($document->description, 100) }}</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-4 text-sm text-gray-500">
+                    <div class="flex items-center gap-4 text-sm text-gray-500 mb-4">
                         <span class="flex items-center gap-1">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -259,7 +198,28 @@
                             {{ $document->download_count }}
                         </span>
                     </div>
-                </a>
+
+                    {{-- Quick Action Buttons --}}
+                    <div class="flex flex-wrap gap-2">
+                        @if($document->file_path)
+                        <a href="{{ document_url($document->file_path) }}"
+                           target="_blank"
+                           class="flex-1 inline-flex items-center justify-center gap-1 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-xs font-medium">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Lihat
+                        </a>
+                        @endif
+                        <a href="{{ route('student.repository.download', $document->id) }}"
+                           class="flex-1 inline-flex items-center justify-center gap-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs font-medium">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                            Download
+                        </a>
+                    </div>
+                </div>
                 @endforeach
             </div>
         </div>
@@ -267,12 +227,59 @@
 
         {{-- search and filter section --}}
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-            
+
             {{-- filter sidebar --}}
-            <div class="lg:col-span-1">
+            <div class="lg:col-span-1 space-y-6">
+
+                {{-- Stats Cards --}}
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Statistik</h3>
+                    <div class="space-y-4">
+                        {{-- Total Documents --}}
+                        <div class="flex items-center gap-3 stats-item">
+                            <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-600 font-medium">Total Dokumen</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ $stats['total_documents'] }}</p>
+                            </div>
+                        </div>
+
+                        {{-- Total Downloads --}}
+                        <div class="flex items-center gap-3 stats-item">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-600 font-medium">Total Downloads</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ number_format($stats['total_downloads']) }}</p>
+                            </div>
+                        </div>
+
+                        {{-- Total Institutions --}}
+                        <div class="flex items-center gap-3 stats-item">
+                            <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-600 font-medium">Instansi Terdaftar</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ $stats['total_institutions'] }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Filter Form --}}
                 <div class="filter-section sticky top-24">
                     <h3 class="text-lg font-bold text-gray-900 mb-4">Filter</h3>
-                    
+
                     <form action="{{ route('student.repository.index') }}" method="GET" class="space-y-4">
                         
                         {{-- search --}}
@@ -428,10 +435,10 @@
                                     
                                     {{-- categories --}}
                                     @if($document->categories)
-                                    <div class="flex flex-wrap gap-2">
+                                    <div class="flex flex-wrap gap-2 mb-4">
                                         @php
-                                            $categories = is_array($document->categories) 
-                                                ? $document->categories 
+                                            $categories = is_array($document->categories)
+                                                ? $document->categories
                                                 : json_decode($document->categories, true) ?? [];
                                         @endphp
                                         @foreach(array_slice($categories, 0, 3) as $category)
@@ -446,6 +453,37 @@
                                         @endif
                                     </div>
                                     @endif
+
+                                    {{-- Action Buttons --}}
+                                    <div class="flex flex-wrap gap-2 mt-4">
+                                        <a href="{{ route('student.repository.show', $document->id) }}"
+                                           class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            Detail
+                                        </a>
+
+                                        @if($document->file_path)
+                                        <a href="{{ document_url($document->file_path) }}"
+                                           target="_blank"
+                                           class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                            </svg>
+                                            Lihat Online
+                                        </a>
+                                        @endif
+
+                                        <a href="{{ route('student.repository.download', $document->id) }}"
+                                           class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                            </svg>
+                                            Download
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>

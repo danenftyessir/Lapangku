@@ -31,7 +31,7 @@
                             Proyek Saya
                         </a>
                         <a href="{{ route('student.repository.index') }}"
-                           class="text-gray-700 hover:text-black px-3 py-2 text-sm font-semibold transition-all duration-300 rounded-lg hover:bg-gray-100 {{ request()->routeIs('repository.*') ? 'text-black bg-gray-100' : '' }}">
+                           class="text-gray-700 hover:text-black px-3 py-2 text-sm font-semibold transition-all duration-300 rounded-lg hover:bg-gray-100 {{ request()->routeIs('student.repository.*') ? 'text-black bg-gray-100' : '' }}">
                             Repositori
                         </a>
                         <a href="{{ route('student.friends.index') }}"
@@ -213,7 +213,7 @@
                         Proyek Saya
                     </a>
                     <a href="{{ route('student.repository.index') }}"
-                       class="block px-4 py-3 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors {{ request()->routeIs('repository.*') ? 'text-blue-600 bg-blue-50' : '' }}">
+                       class="block px-4 py-3 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors {{ request()->routeIs('student.repository.*') ? 'text-blue-600 bg-blue-50' : '' }}">
                         Repositori
                     </a>
                     <a href="{{ route('student.friends.index') }}"

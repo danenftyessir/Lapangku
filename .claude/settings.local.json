@@ -12,7 +12,8 @@
       "Bash(mkdir:*)",
       "Bash(composer dump-autoload:*)",
       "Bash(php -r:*)",
-      "Bash(.env)"
+      "Bash(.env)",
+      "Bash(nul)"
     ],
     "deny": [],
     "ask": []

@@ -7,6 +7,8 @@ use App\Models\Project;
 use App\Models\ProjectMilestone;
 use App\Models\ProjectReport;
 use App\Services\ProjectService;
+use App\Services\PortfolioService;
+use App\Services\AIProjectSuggestionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,10 +20,17 @@ use Illuminate\Support\Facades\Auth;
 class MyProjectsController extends Controller
 {
     protected $projectService;
+    protected $portfolioService;
+    protected $aiSuggestionService;
 
-    public function __construct(ProjectService $projectService)
-    {
+    public function __construct(
+        ProjectService $projectService,
+        PortfolioService $portfolioService,
+        AIProjectSuggestionService $aiSuggestionService
+    ) {
         $this->projectService = $projectService;
+        $this->portfolioService = $portfolioService;
+        $this->aiSuggestionService = $aiSuggestionService;
     }
 
     /**
@@ -30,9 +39,9 @@ class MyProjectsController extends Controller
     public function index(Request $request)
     {
         $student = Auth::user()->student;
-        
+
         $query = Project::where('student_id', $student->id)
-                       ->with(['problem', 'institution', 'milestones']);
+                       ->with(['problem.images', 'institution', 'milestones', 'reports']);
 
         // filter by status
         if ($request->filled('status')) {
@@ -45,12 +54,29 @@ class MyProjectsController extends Controller
             }
         }
 
-        $projects = $query->latest()->paginate(6);
+        // sort
+        if ($request->filled('sort')) {
+            if ($request->sort === 'oldest') {
+                $query->oldest();
+            } else {
+                $query->latest();
+            }
+        } else {
+            $query->latest();
+        }
+
+        $projects = $query->paginate(6);
 
         // statistik
         $stats = $this->projectService->getStudentStats($student->id);
 
-        return view('student.projects.index', compact('projects', 'stats'));
+        // generate AI suggestions untuk setiap project
+        $aiSuggestions = [];
+        foreach ($projects as $project) {
+            $aiSuggestions[$project->id] = $this->aiSuggestionService->generateProjectSuggestion($project);
+        }
+
+        return view('student.projects.index', compact('projects', 'stats', 'aiSuggestions'));
     }
 
     /**
@@ -59,11 +85,11 @@ class MyProjectsController extends Controller
     public function show($id)
     {
         $student = Auth::user()->student;
-        
+
         $project = Project::where('id', $id)
                          ->where('student_id', $student->id)
                          ->with([
-                             'problem',
+                             'problem.images',
                              'institution',
                              'milestones',
                              'reports' => function($query) {
@@ -72,7 +98,10 @@ class MyProjectsController extends Controller
                          ])
                          ->firstOrFail();
 
-        return view('student.projects.show', compact('project'));
+        // get team members yang bekerja di problem yang sama
+        $teamMembers = $this->getTeamMembers($student, $project);
+
+        return view('student.projects.show', compact('project', 'teamMembers'));
     }
 
     /**
@@ -80,22 +109,34 @@ class MyProjectsController extends Controller
      */
     public function updateMilestone(Request $request, $milestoneId)
     {
+        $student = Auth::user()->student;
+
         $request->validate([
             'progress_percentage' => 'required|integer|min:0|max:100',
             'notes' => 'nullable|string',
         ]);
 
         try {
+            // Security check: pastikan milestone milik proyek student ini
+            $milestone = ProjectMilestone::findOrFail($milestoneId);
+            $project = Project::where('id', $milestone->project_id)
+                             ->where('student_id', $student->id)
+                             ->firstOrFail();
+
             $milestone = $this->projectService->updateMilestoneProgress(
                 $milestoneId,
                 $request->progress_percentage,
                 $request->notes
             );
 
+            // Update project progress
+            $project->updateProgress();
+
             return response()->json([
                 'success' => true,
                 'message' => 'Progress milestone berhasil diupdate',
                 'milestone' => $milestone,
+                'project_progress' => $project->fresh()->progress_percentage,
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -239,7 +280,7 @@ class MyProjectsController extends Controller
     public function downloadReport($reportId)
     {
         $student = Auth::user()->student;
-        
+
         $report = ProjectReport::where('id', $reportId)
                               ->where('student_id', $student->id)
                               ->firstOrFail();
@@ -251,5 +292,61 @@ class MyProjectsController extends Controller
         return response()->download(
             storage_path('app/public/' . $report->document_path)
         );
+    }
+
+    /**
+     * toggle portfolio visibility untuk proyek
+     */
+    public function togglePortfolioVisibility($projectId)
+    {
+        $student = Auth::user()->student;
+
+        $project = Project::where('id', $projectId)
+                         ->where('student_id', $student->id)
+                         ->where('status', 'completed') // hanya completed projects
+                         ->firstOrFail();
+
+        try {
+            $project = $this->portfolioService->toggleProjectVisibility($projectId);
+
+            return response()->json([
+                'success' => true,
+                'message' => $project->is_portfolio_visible
+                    ? 'Proyek berhasil ditambahkan ke portfolio'
+                    : 'Proyek berhasil dihapus dari portfolio',
+                'is_visible' => $project->is_portfolio_visible,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengubah visibility portfolio: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * get team members yang bekerja pada problem yang sama dengan proyek ini
+     *
+     * @param \App\Models\Student $student
+     * @param \App\Models\Project|null $project
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    private function getTeamMembers($student, $project = null)
+    {
+        // jika tidak ada project spesifik, return empty collection
+        if (!$project) {
+            return collect([]);
+        }
+
+        // cari mahasiswa lain yang bekerja di problem yang sama
+        return \App\Models\Student::select('id', 'user_id', 'university_id', 'profile_photo_path', 'first_name', 'last_name')
+            ->whereHas('projects', function($query) use ($project) {
+                $query->where('problem_id', $project->problem_id)
+                      ->whereIn('status', ['active', 'completed']); // hanya yang aktif atau selesai
+            })
+            ->where('id', '!=', $student->id) // exclude diri sendiri
+            ->with(['user:id,name', 'university:id,name'])
+            ->limit(6)
+            ->get();
     }
 }

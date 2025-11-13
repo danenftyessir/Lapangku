@@ -157,6 +157,8 @@ Route::middleware(['auth', 'check.user.type:student'])->prefix('student')->name(
         Route::post('/{id}/report', [MyProjectsController::class, 'storeReport'])->name('store-report');
         Route::get('/{id}/final-report/create', [MyProjectsController::class, 'createFinalReport'])->name('create-final-report');
         Route::post('/{id}/final-report', [MyProjectsController::class, 'storeFinalReport'])->name('store-final-report');
+        Route::post('/{id}/toggle-portfolio', [MyProjectsController::class, 'togglePortfolioVisibility'])->name('toggle-portfolio');
+        Route::put('/milestones/{milestoneId}/update', [MyProjectsController::class, 'updateMilestone'])->name('milestones.update');
     });
     
     // profile (gabungan dengan portfolio) - private routes
