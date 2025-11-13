@@ -10,7 +10,8 @@
       "Bash(docker-compose:*)",
       "Bash(php artisan:*)",
       "Bash(mkdir:*)",
-      "Bash(composer dump-autoload:*)"
+      "Bash(composer dump-autoload:*)",
+      "Bash(php -r:*)"
     ],
     "deny": [],
     "ask": []

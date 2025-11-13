@@ -28,6 +28,10 @@ class ProfileController extends Controller
     ) {
         $this->storageService = $storageService;
         $this->portfolioService = $portfolioService;
+
+        // publicView tidak memerlukan authentication (public portfolio)
+        // method lain memerlukan auth kecuali publicView
+        $this->middleware('auth')->except(['publicView']);
     }
 
     /**
