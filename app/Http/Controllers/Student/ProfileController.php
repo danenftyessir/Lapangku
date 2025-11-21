@@ -251,7 +251,7 @@ class ProfileController extends Controller
     {
         $student = Auth::user()->student;
         $username = $this->portfolioService->generatePortfolioSlug($student);
-        
+
         $shareUrl = route('profile.public', $username);
 
         return response()->json([
@@ -259,5 +259,124 @@ class ProfileController extends Controller
             'url' => $shareUrl,
             'username' => $username,
         ]);
+    }
+
+    // ========================================================================
+    // PROFILE COMPLETENESS
+    // ========================================================================
+
+    /**
+     * hitung persentase kelengkapan profil
+     */
+    public function getCompleteness()
+    {
+        $user = Auth::user();
+        $student = $user->student;
+
+        $fields = [
+            'first_name' => ['weight' => 10, 'filled' => !empty($student->first_name)],
+            'last_name' => ['weight' => 5, 'filled' => !empty($student->last_name)],
+            'profile_photo' => ['weight' => 10, 'filled' => !empty($student->profile_photo_path)],
+            'university' => ['weight' => 10, 'filled' => !empty($student->university_id)],
+            'major' => ['weight' => 10, 'filled' => !empty($student->major)],
+            'semester' => ['weight' => 5, 'filled' => !empty($student->semester)],
+            'nim' => ['weight' => 5, 'filled' => !empty($student->nim)],
+            'phone' => ['weight' => 10, 'filled' => !empty($student->phone)],
+            'bio' => ['weight' => 10, 'filled' => !empty($student->bio)],
+            'skills' => ['weight' => 15, 'filled' => !empty($student->skills) && count($student->skills) > 0],
+            'interests' => ['weight' => 5, 'filled' => !empty($student->interests) && count($student->interests) > 0],
+            'stories' => ['weight' => 5, 'filled' => !empty($student->stories) && count($student->stories) > 0],
+        ];
+
+        $totalWeight = 0;
+        $filledWeight = 0;
+        $missing = [];
+
+        foreach ($fields as $name => $field) {
+            $totalWeight += $field['weight'];
+            if ($field['filled']) {
+                $filledWeight += $field['weight'];
+            } else {
+                $missing[] = $name;
+            }
+        }
+
+        $percentage = $totalWeight > 0 ? round(($filledWeight / $totalWeight) * 100) : 0;
+
+        return response()->json([
+            'success' => true,
+            'percentage' => $percentage,
+            'missing' => $missing,
+            'suggestions' => $this->getCompletionSuggestions($missing),
+        ]);
+    }
+
+    /**
+     * dapatkan saran untuk melengkapi profil
+     */
+    private function getCompletionSuggestions($missing)
+    {
+        $suggestions = [
+            'profile_photo' => 'Tambahkan foto profil untuk kesan pertama yang baik',
+            'bio' => 'Tulis bio singkat yang menjelaskan siapa Anda',
+            'skills' => 'Tambahkan skill untuk menarik perekrut',
+            'phone' => 'Tambahkan nomor telepon agar mudah dihubungi',
+            'university' => 'Pilih universitas Anda',
+            'major' => 'Isi program studi Anda',
+        ];
+
+        return array_intersect_key($suggestions, array_flip($missing));
+    }
+
+    // ========================================================================
+    // SHARE PROFILE WITH QR CODE
+    // ========================================================================
+
+    /**
+     * generate QR code untuk profile
+     */
+    public function generateQR()
+    {
+        $user = Auth::user();
+        $student = $user->student;
+        $username = $this->portfolioService->generatePortfolioSlug($student);
+        $profileUrl = route('profile.public', $username);
+
+        // generate QR code sebagai data URL (menggunakan library sederhana atau API)
+        $qrApiUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($profileUrl);
+
+        return response()->json([
+            'success' => true,
+            'profile_url' => $profileUrl,
+            'qr_url' => $qrApiUrl,
+            'username' => $username,
+        ]);
+    }
+
+    // ========================================================================
+    // EXPORT PROFILE TO PDF
+    // ========================================================================
+
+    /**
+     * export profile ke PDF
+     */
+    public function exportPDF()
+    {
+        $user = Auth::user();
+        $student = $user->student;
+
+        // ambil data portfolio
+        $portfolioData = $this->portfolioService->getPortfolioData($student->id);
+
+        // render view ke HTML
+        $html = view('student.profile.pdf', array_merge(
+            compact('user', 'student'),
+            $portfolioData
+        ))->render();
+
+        // untuk saat ini return HTML, nanti bisa integrasikan dengan dompdf atau snappy
+        return response($html)
+            ->header('Content-Type', 'text/html')
+            ->header('Content-Disposition', 'inline; filename="profile-' . $student->first_name . '.html"');
     }
 }

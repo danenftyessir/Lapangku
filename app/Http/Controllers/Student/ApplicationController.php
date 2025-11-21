@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\Application;
+use App\Models\JobApplication;
 use App\Models\Problem;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
@@ -28,18 +29,21 @@ class ApplicationController extends Controller
 
     /**
      * tampilkan daftar semua aplikasi mahasiswa
+     * menampilkan 2 tab: proyek KKN dan lowongan kerja/magang
      */
     public function index(Request $request)
     {
-        $student = Auth::user()->student;
-        
-        $query = Application::with(['problem.institution', 'problem.province', 'problem.regency'])
+        $user = Auth::user();
+        $student = $user->student;
+
+        // === APLIKASI PROYEK KKN ===
+        $projectQuery = Application::with(['problem.institution', 'problem.province', 'problem.regency'])
                             ->where('student_id', $student->id);
-        
+
         // filter berdasarkan search (judul proyek atau nama instansi)
-        if ($request->filled('search')) {
+        if ($request->filled('search') && $request->get('tab', 'projects') === 'projects') {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $projectQuery->where(function($q) use ($search) {
                 $q->whereHas('problem', function($q) use ($search) {
                     $q->where('title', 'like', "%{$search}%")
                     ->orWhereHas('institution', function($q) use ($search) {
@@ -48,27 +52,27 @@ class ApplicationController extends Controller
                 });
             });
         }
-        
+
         // filter berdasarkan status
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
+        if ($request->filled('status') && $request->get('tab', 'projects') === 'projects') {
+            $projectQuery->where('status', $request->status);
         }
-        
+
         // sorting
         $sort = $request->input('sort', 'latest');
         switch ($sort) {
             case 'oldest':
-                $query->orderBy('applied_at', 'asc');
+                $projectQuery->orderBy('applied_at', 'asc');
                 break;
             case 'latest':
             default:
-                $query->orderBy('applied_at', 'desc');
+                $projectQuery->orderBy('applied_at', 'desc');
                 break;
         }
-        
-        $applications = $query->paginate(10)->withQueryString();
-        
-        // statistik untuk summary
+
+        $applications = $projectQuery->paginate(10, ['*'], 'project_page')->withQueryString();
+
+        // statistik proyek
         $stats = [
             'total' => Application::where('student_id', $student->id)->count(),
             'pending' => Application::where('student_id', $student->id)->where('status', 'pending')->count(),
@@ -76,8 +80,55 @@ class ApplicationController extends Controller
             'accepted' => Application::where('student_id', $student->id)->where('status', 'accepted')->count(),
             'rejected' => Application::where('student_id', $student->id)->where('status', 'rejected')->count(),
         ];
-        
-        return view('student.applications.index', compact('applications', 'stats'));
+
+        // === APLIKASI LOWONGAN KERJA/MAGANG ===
+        $jobQuery = JobApplication::with(['jobPosting.company'])
+                        ->where('user_id', $user->id);
+
+        // filter berdasarkan search
+        if ($request->filled('search') && $request->get('tab') === 'jobs') {
+            $search = $request->search;
+            $jobQuery->where(function($q) use ($search) {
+                $q->whereHas('jobPosting', function($q) use ($search) {
+                    $q->where('title', 'ILIKE', "%{$search}%")
+                    ->orWhereHas('company', function($q) use ($search) {
+                        $q->where('name', 'ILIKE', "%{$search}%");
+                    });
+                });
+            });
+        }
+
+        // filter berdasarkan status
+        if ($request->filled('job_status') && $request->get('tab') === 'jobs') {
+            $jobQuery->where('status', $request->job_status);
+        }
+
+        // sorting
+        $jobQuery->orderBy('applied_at', $sort === 'oldest' ? 'asc' : 'desc');
+
+        $jobApplications = $jobQuery->paginate(10, ['*'], 'job_page')->withQueryString();
+
+        // statistik lowongan
+        $jobStats = [
+            'total' => JobApplication::where('user_id', $user->id)->count(),
+            'new' => JobApplication::where('user_id', $user->id)->where('status', 'new')->count(),
+            'reviewed' => JobApplication::where('user_id', $user->id)->where('status', 'reviewed')->count(),
+            'shortlisted' => JobApplication::where('user_id', $user->id)->where('status', 'shortlisted')->count(),
+            'interview' => JobApplication::where('user_id', $user->id)->where('status', 'interview')->count(),
+            'hired' => JobApplication::where('user_id', $user->id)->where('status', 'hired')->count(),
+            'rejected' => JobApplication::where('user_id', $user->id)->where('status', 'rejected')->count(),
+        ];
+
+        // active tab
+        $activeTab = $request->get('tab', 'projects');
+
+        return view('student.applications.index', compact(
+            'applications',
+            'stats',
+            'jobApplications',
+            'jobStats',
+            'activeTab'
+        ));
     }
         
     /**
@@ -359,6 +410,66 @@ class ApplicationController extends Controller
             ->header('Content-Length', strlen($fileContent));
     }
     
+    /**
+     * application tracker dashboard - overview visual semua lamaran
+     */
+    public function tracker()
+    {
+        $user = Auth::user();
+        $student = $user->student;
+
+        // ambil semua job applications dengan status timeline
+        $jobApplications = JobApplication::with(['jobPosting.company'])
+            ->where('user_id', $user->id)
+            ->orderBy('applied_at', 'desc')
+            ->get();
+
+        // ambil semua project applications
+        $projectApplications = Application::with(['problem.institution'])
+            ->where('student_id', $student->id)
+            ->orderBy('applied_at', 'desc')
+            ->get();
+
+        // statistik gabungan
+        $totalApplications = $jobApplications->count() + $projectApplications->count();
+        $activeCount = $jobApplications->whereIn('status', ['new', 'reviewed', 'shortlisted', 'interview'])->count()
+                     + $projectApplications->whereIn('status', ['pending', 'reviewed'])->count();
+        $successCount = $jobApplications->where('status', 'hired')->count()
+                      + $projectApplications->where('status', 'accepted')->count();
+        $rejectedCount = $jobApplications->where('status', 'rejected')->count()
+                       + $projectApplications->where('status', 'rejected')->count();
+
+        // weekly activity (7 hari terakhir)
+        $weeklyActivity = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            $weeklyActivity[$date] = [
+                'date' => now()->subDays($i)->format('d M'),
+                'applications' => $jobApplications->filter(function($app) use ($date) {
+                    return $app->applied_at && $app->applied_at->format('Y-m-d') === $date;
+                })->count() + $projectApplications->filter(function($app) use ($date) {
+                    return $app->applied_at && $app->applied_at->format('Y-m-d') === $date;
+                })->count(),
+            ];
+        }
+
+        // recent updates (aplikasi dengan perubahan status terbaru)
+        $recentUpdates = $jobApplications->filter(function($app) {
+            return $app->updated_at > $app->applied_at;
+        })->take(5);
+
+        return view('student.applications.tracker', compact(
+            'jobApplications',
+            'projectApplications',
+            'totalApplications',
+            'activeCount',
+            'successCount',
+            'rejectedCount',
+            'weeklyActivity',
+            'recentUpdates'
+        ));
+    }
+
     /**
      * withdraw/batalkan aplikasi
      */

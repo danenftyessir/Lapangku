@@ -16,6 +16,7 @@ use App\Http\Controllers\Student\WishlistController;
 use App\Http\Controllers\Student\FriendController;
 use App\Http\Controllers\Student\KnowledgeRepositoryController;
 use App\Http\Controllers\Student\ChatbotController;
+use App\Http\Controllers\Student\JobController as StudentJobController;
 use App\Http\Controllers\Institution\DashboardController as InstitutionDashboardController;
 use App\Http\Controllers\Institution\ProblemController;
 use App\Http\Controllers\Institution\ApplicationReviewController;
@@ -149,6 +150,7 @@ Route::middleware(['auth', 'check.user.type:student'])->prefix('student')->name(
     // applications
     Route::prefix('applications')->name('applications.')->group(function () {
         Route::get('/', [ApplicationController::class, 'index'])->name('index');
+        Route::get('/tracker', [ApplicationController::class, 'tracker'])->name('tracker');
         Route::get('/create/{problemId}', [ApplicationController::class, 'create'])->name('create');
         Route::post('/', [ApplicationController::class, 'store'])->name('store');
         Route::get('/{id}', [ApplicationController::class, 'show'])->name('show');
@@ -176,6 +178,9 @@ Route::middleware(['auth', 'check.user.type:student'])->prefix('student')->name(
         Route::put('/password', [StudentProfileController::class, 'updatePassword'])->name('password.update');
         Route::post('/project/{projectId}/toggle-visibility', [StudentProfileController::class, 'toggleProjectVisibility'])->name('project.toggle-visibility');
         Route::get('/share-link', [StudentProfileController::class, 'getShareLink'])->name('share-link');
+        Route::get('/completeness', [StudentProfileController::class, 'getCompleteness'])->name('completeness');
+        Route::get('/qr-code', [StudentProfileController::class, 'generateQR'])->name('qr-code');
+        Route::get('/export-pdf', [StudentProfileController::class, 'exportPDF'])->name('export-pdf');
     });
     
     // redirect portfolio ke profile untuk backward compatibility
@@ -219,6 +224,23 @@ Route::middleware(['auth', 'check.user.type:student'])->prefix('student')->name(
         Route::get('/', [WishlistController::class, 'index'])->name('index');
         Route::post('/{problemId}', [WishlistController::class, 'toggle'])->name('toggle');
         Route::delete('/{wishlistId}/remove', [WishlistController::class, 'remove'])->name('remove');
+    });
+
+    // jobs - browse lowongan kerja/magang dari company
+    Route::prefix('jobs')->name('jobs.')->group(function () {
+        Route::get('/', [StudentJobController::class, 'index'])->name('index');
+        Route::get('/saved', [StudentJobController::class, 'saved'])->name('saved');
+        Route::get('/alerts', [StudentJobController::class, 'alerts'])->name('alerts');
+        Route::get('/compare', [StudentJobController::class, 'compare'])->name('compare');
+        Route::get('/{id}', [StudentJobController::class, 'show'])->name('show');
+        Route::post('/{id}/apply', [StudentJobController::class, 'apply'])->name('apply');
+        Route::post('/{id}/quick-apply', [StudentJobController::class, 'quickApply'])->name('quick-apply');
+        Route::delete('/{id}/withdraw', [StudentJobController::class, 'withdraw'])->name('withdraw');
+        Route::post('/{id}/toggle-save', [StudentJobController::class, 'toggleSave'])->name('toggle-save');
+        Route::put('/{id}/update-saved', [StudentJobController::class, 'updateSaved'])->name('update-saved');
+        Route::post('/alerts/store', [StudentJobController::class, 'storeAlert'])->name('alerts.store');
+        Route::post('/alerts/{id}/toggle', [StudentJobController::class, 'toggleAlert'])->name('alerts.toggle');
+        Route::delete('/alerts/{id}', [StudentJobController::class, 'destroyAlert'])->name('alerts.destroy');
     });
     
     // knowledge repository
