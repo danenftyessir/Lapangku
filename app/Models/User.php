@@ -155,6 +155,16 @@ class User extends Authenticatable implements MustVerifyEmail
             // Institution model sudah handle fallback ke ui-avatars jika tidak ada logo
             return $this->institution?->logo_url
                 ?? 'https://ui-avatars.com/api/?name=' . urlencode(substr($this->name, 0, 1)) . '&size=200&background=10B981&color=ffffff';
+        } elseif ($this->isCompany()) {
+            // gunakan logo dari Company model
+            // WAJIB: Logo disimpan di Supabase Storage
+            if ($this->company && $this->company->logo) {
+                // jika ada logo, gunakan Supabase URL
+                $supabaseService = app(\App\Services\SupabaseStorageService::class);
+                return $supabaseService->getPublicUrl($this->company->logo);
+            }
+            // fallback ke ui-avatars dengan initial company name
+            return 'https://ui-avatars.com/api/?name=' . urlencode(substr($this->name, 0, 2)) . '&size=200&background=F59E0B&color=ffffff';
         }
 
         // default avatar untuk user type lain (admin)

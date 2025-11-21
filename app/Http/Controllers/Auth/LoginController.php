@@ -194,6 +194,14 @@ class LoginController extends Controller
                 ]);
                 break;
 
+            case 'company':
+                $route = route('company.dashboard');
+                Log::info('Redirecting to company dashboard', [
+                    'user_id' => $user->id,
+                    'route' => $route,
+                ]);
+                break;
+
             default:
                 Log::error('Invalid user type', [
                     'user_id' => $user->id,

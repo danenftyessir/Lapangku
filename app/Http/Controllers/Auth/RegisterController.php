@@ -107,6 +107,25 @@ class RegisterController extends Controller
     }
 
     /**
+     * tampilkan form registrasi company
+     */
+    public function showCompanyForm()
+    {
+        // ambil data provinces untuk dropdown
+        $provinces = Province::orderBy('name', 'asc')->get();
+
+        return view('auth.company-register', compact('provinces'));
+    }
+
+    /**
+     * alias untuk showCompanyForm
+     */
+    public function showCompanyRegistrationForm()
+    {
+        return $this->showCompanyForm();
+    }
+
+    /**
      * proses registrasi student
      * PERBAIKAN BUG: gunakan Supabase untuk upload foto dan refresh session setelah registrasi
      */
@@ -420,5 +439,149 @@ class RegisterController extends Controller
                 ->withInput()
                 ->with('error', 'Terjadi kesalahan saat registrasi. Silakan coba lagi.');
         }
+    }
+
+    /**
+     * proses registrasi company
+     * WAJIB: Semua data disimpan langsung ke Supabase PostgreSQL
+     * WAJIB: Logo disimpan di Supabase Storage
+     */
+    public function registerCompany(CompanyRegisterRequest $request)
+    {
+        try {
+            Log::info('Company registration attempt', [
+                'email' => $request->email,
+                'company_name' => $request->company_name,
+            ]);
+
+            // gunakan database transaction untuk memastikan atomicity
+            DB::beginTransaction();
+
+            // buat user account
+            $user = User::create([
+                'name' => $request->company_name,
+                'email' => $request->email,
+                'username' => $request->username,
+                'password' => Hash::make($request->password),
+                'user_type' => 'company',
+                'is_active' => true,
+            ]);
+
+            Log::info('Company user created successfully', ['user_id' => $user->id]);
+
+            // buat company profile dengan data awal
+            // PENTING: Data ini akan disimpan di Supabase melalui model Company
+            $companyData = [
+                'user_id' => $user->id,
+                'name' => $request->company_name,
+                'industry' => $request->industry,
+                'description' => $request->description,
+                'website' => $request->website,
+                'address' => $request->address,
+                'city' => $request->city,
+                'province_id' => $request->province_id,
+                'phone' => $request->phone,
+                'founded_year' => $request->founded_year,
+                'employee_count' => $this->getEmployeeCountFromSize($request->company_size),
+                'verification_status' => 'pending',
+                'logo' => null, // akan diupdate jika ada logo
+            ];
+
+            $company = Company::create($companyData);
+
+            Log::info('Company profile created', ['company_id' => $company->id]);
+
+            // upload logo menggunakan SupabaseStorageService
+            // WAJIB: Logo harus disimpan di Supabase Storage, BUKAN local storage
+            if ($request->hasFile('logo')) {
+                try {
+                    $file = $request->file('logo');
+
+                    // gunakan method uploadCompanyLogo dari SupabaseStorageService
+                    $uploadedPath = $this->storageService->uploadCompanyLogo($file, $company->id);
+
+                    if ($uploadedPath) {
+                        // update company profile dengan path logo yang baru
+                        $company->update(['logo' => $uploadedPath]);
+                        Log::info('Company logo uploaded to Supabase Storage', [
+                            'company_id' => $company->id,
+                            'path' => $uploadedPath
+                        ]);
+                    } else {
+                        Log::warning('Failed to upload company logo to Supabase for company ID: ' . $company->id);
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Error uploading company logo to Supabase: ' . $e->getMessage());
+                    // tidak perlu throw exception, logo bersifat opsional
+                }
+            }
+
+            DB::commit();
+
+            // picu event bahwa user baru telah terdaftar (untuk kirim email verifikasi)
+            event(new Registered($user));
+
+            Log::info('Company registered successfully', [
+                'user_id' => $user->id,
+                'company_id' => $company->id,
+                'email' => $user->email,
+                'company_name' => $company->name
+            ]);
+
+            // auto-login user setelah registrasi berhasil
+            Auth::login($user);
+
+            // refresh session untuk memuat data terbaru
+            $user = $user->fresh(['company']);
+            Auth::setUser($user);
+
+            // cek apakah request adalah AJAX
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Registrasi Berhasil! Selamat Datang Di Lapangku.',
+                    'redirect_url' => route('company.dashboard')
+                ], 200);
+            }
+
+            // redirect ke dashboard company dengan pesan sukses
+            return redirect()
+                ->route('company.dashboard')
+                ->with('success', 'Selamat Datang Di Lapangku! Akun Perusahaan Anda Berhasil Dibuat. Mulai Posting Lowongan Dan Temukan Talent Terbaik.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Company registration failed: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+
+            // cek apakah request adalah AJAX
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi Kesalahan Saat Registrasi. Silakan Coba Lagi.',
+                    'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+                ], 500);
+            }
+
+            return back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan saat registrasi. Silakan coba lagi. Error: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * helper method untuk convert company size ke employee count
+     */
+    private function getEmployeeCountFromSize(string $size): ?int
+    {
+        return match($size) {
+            '1-10' => 10,
+            '11-50' => 50,
+            '51-200' => 200,
+            '201-500' => 500,
+            '501-1000' => 1000,
+            '1000+' => 1000,
+            default => null,
+        };
     }
 }

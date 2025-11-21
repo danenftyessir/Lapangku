@@ -18,8 +18,64 @@
         </div>
     </div>
 
+    {{-- quick actions panel --}}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20 mb-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 fade-in-up gpu-accelerate">
+            <h2 class="text-lg font-bold text-gray-900 mb-4">Aksi Cepat</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <a href="{{ route('company.jobs.create') }}" class="flex items-center gap-3 p-4 rounded-lg border-2 border-dashed border-gray-200 hover:border-amber-500 hover:bg-amber-50 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-amber-100 group-hover:bg-amber-500 flex items-center justify-center transition-colors">
+                        <svg class="w-5 h-5 text-amber-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-semibold text-gray-900">Post Job</p>
+                        <p class="text-xs text-gray-500">Buat lowongan baru</p>
+                    </div>
+                </a>
+
+                <a href="{{ route('company.applications.index') }}" class="flex items-center gap-3 p-4 rounded-lg border-2 border-dashed border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-blue-100 group-hover:bg-blue-500 flex items-center justify-center transition-colors">
+                        <svg class="w-5 h-5 text-blue-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-semibold text-gray-900">Lihat Lamaran</p>
+                        <p class="text-xs text-gray-500">{{ $stats['applications_received'] }} total</p>
+                    </div>
+                </a>
+
+                <a href="{{ route('company.talents.index') }}" class="flex items-center gap-3 p-4 rounded-lg border-2 border-dashed border-gray-200 hover:border-green-500 hover:bg-green-50 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-green-100 group-hover:bg-green-500 flex items-center justify-center transition-colors">
+                        <svg class="w-5 h-5 text-green-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-semibold text-gray-900">Cari Talent</p>
+                        <p class="text-xs text-gray-500">Browse kandidat</p>
+                    </div>
+                </a>
+
+                <a href="{{ route('company.jobs.index') }}" class="flex items-center gap-3 p-4 rounded-lg border-2 border-dashed border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-purple-100 group-hover:bg-purple-500 flex items-center justify-center transition-colors">
+                        <svg class="w-5 h-5 text-purple-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-semibold text-gray-900">Kelola Jobs</p>
+                        <p class="text-xs text-gray-500">{{ $stats['active_jobs'] }} aktif</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
     {{-- statistik cards --}}
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
 
             {{-- total jobs --}}
@@ -76,10 +132,20 @@
 
             {{-- recent applications --}}
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 fade-in-up gpu-accelerate" style="animation-delay: 0.35s;">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">Lamaran Terbaru</h2>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-900">Lamaran Terbaru</h2>
+                    @if($recentApplications->count() > 0)
+                    <a href="{{ route('company.applications.index') }}" class="text-sm text-amber-600 hover:text-amber-700 font-semibold transition-colors flex items-center gap-1">
+                        Lihat Semua
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                    @endif
+                </div>
                 <div class="space-y-4">
-                    @foreach($recentApplications as $application)
-                    <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0 hover-lift">
+                    @forelse($recentApplications as $application)
+                    <a href="{{ route('company.applications.show', $application['id']) }}" class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0 hover-lift cursor-pointer">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                                 {{ substr($application['name'], 0, 1) }}
@@ -99,20 +165,47 @@
                             @else Baru
                             @endif
                         </span>
+                    </a>
+                    @empty
+                    <div class="text-center py-12">
+                        <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <p class="text-gray-500 font-medium mb-1">Belum Ada Lamaran</p>
+                        <p class="text-sm text-gray-400 mb-4">Posting lowongan untuk mulai menerima lamaran</p>
+                        <a href="{{ route('company.jobs.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors text-sm font-semibold">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            Post Lowongan Baru
+                        </a>
                     </div>
-                    @endforeach
+                    @endforelse
                 </div>
             </div>
 
             {{-- AI talent recommendations --}}
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 fade-in-up gpu-accelerate" style="animation-delay: 0.4s;">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">Rekomendasi Talenta AI</h2>
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Rekomendasi Talenta AI</h2>
+                        <p class="text-xs text-gray-500 mt-1">Kandidat potensial untuk posisi Anda</p>
+                    </div>
+                    @if($talentRecommendations->count() > 0)
+                    <a href="{{ route('company.talents.index') }}" class="text-sm text-amber-600 hover:text-amber-700 font-semibold transition-colors flex items-center gap-1">
+                        Browse Semua
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                    @endif
+                </div>
                 <div class="space-y-4">
-                    @foreach($talentRecommendations as $talent)
-                    <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0 hover-lift">
+                    @forelse($talentRecommendations as $talent)
+                    <a href="{{ route('company.talents.show', $talent['id']) }}" class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0 hover-lift cursor-pointer">
                         <div class="flex items-center gap-3">
                             <div class="relative">
-                                @if($talent['avatar'])
+                                @if($talent['avatar'] && $talent['avatar'] !== 'default-avatar.jpg')
                                 <img src="{{ asset($talent['avatar']) }}" alt="{{ $talent['name'] }}" class="w-10 h-10 rounded-full object-cover">
                                 @else
                                 <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
@@ -123,17 +216,30 @@
                                 <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
                                 @endif
                             </div>
-                            <div>
+                            <div class="flex-1">
                                 <p class="font-semibold text-gray-900 text-sm">{{ $talent['name'] }}</p>
-                                <p class="text-xs text-gray-500">{{ $talent['expertise'] }}</p>
+                                <p class="text-xs text-gray-500 line-clamp-1">{{ $talent['expertise'] }}</p>
                             </div>
                         </div>
-                        {{-- TO DO: implementasi route company.talents.show --}}
-                        <a href="#" class="text-sm text-amber-600 hover:text-amber-700 font-semibold transition-colors">
-                            Lihat Profil
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                    @empty
+                    <div class="text-center py-12">
+                        <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        <p class="text-gray-500 font-medium mb-1">Belum Ada Rekomendasi</p>
+                        <p class="text-sm text-gray-400 mb-4">Mulai posting lowongan untuk mendapat rekomendasi talent</p>
+                        <a href="{{ route('company.talents.index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-semibold">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            Browse Talents
                         </a>
                     </div>
-                    @endforeach
+                    @endforelse
                 </div>
             </div>
         </div>

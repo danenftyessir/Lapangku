@@ -351,7 +351,7 @@ class SupabaseStorageService
 
     /**
      * upload logo institusi ke supabase
-     * 
+     *
      * @param UploadedFile $file file logo
      * @param int $institutionId ID institusi
      * @return string|false path file yang berhasil diupload atau false jika gagal
@@ -361,6 +361,23 @@ class SupabaseStorageService
         $extension = $file->getClientOriginalExtension();
         $filename = "institution-{$institutionId}-logo-" . time() . '.' . $extension;
         $path = 'institutions/logos/' . $filename;
+
+        return $this->uploadFile($file, $path);
+    }
+
+    /**
+     * upload logo company ke supabase
+     * WAJIB: Logo company disimpan di Supabase Storage, BUKAN local storage
+     *
+     * @param UploadedFile $file file logo
+     * @param int $companyId ID company
+     * @return string|false path file yang berhasil diupload atau false jika gagal
+     */
+    public function uploadCompanyLogo(UploadedFile $file, int $companyId)
+    {
+        $extension = $file->getClientOriginalExtension();
+        $filename = "company-{$companyId}-logo-" . time() . '.' . $extension;
+        $path = 'companies/logos/' . $filename;
 
         return $this->uploadFile($file, $path);
     }

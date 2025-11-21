@@ -326,6 +326,110 @@ class TalentController extends Controller
     }
 
     /**
+     * Compare talents side by side
+     * IMPLEMENTED: Data dari Supabase PostgreSQL
+     */
+    public function compare(Request $request)
+    {
+        $user = Auth::user();
+        $company = $user->company;
+
+        // Get talent IDs from query string
+        $ids = explode(',', $request->get('ids', ''));
+        $ids = array_filter($ids, 'is_numeric');
+
+        if (count($ids) < 2 || count($ids) > 3) {
+            return redirect()->route('company.talents.index')
+                ->with('error', 'Pilih 2-3 talenta untuk dibandingkan');
+        }
+
+        // Get talents data
+        $talents = User::where('user_type', 'student')
+            ->whereIn('id', $ids)
+            ->with(['profile', 'repositories', 'projects'])
+            ->get();
+
+        if ($talents->count() < 2) {
+            return redirect()->route('company.talents.index')
+                ->with('error', 'Talenta tidak ditemukan');
+        }
+
+        return view('company.talents.compare', compact('talents', 'company'));
+    }
+
+    /**
+     * Export talents list to CSV
+     * IMPLEMENTED: Data dari Supabase PostgreSQL
+     */
+    public function export(Request $request)
+    {
+        $user = Auth::user();
+        $company = $user->company;
+
+        // Apply same filters as index page
+        $filters = [
+            'skills' => $request->get('skills', []),
+            'sdg_alignment' => $request->get('sdg_alignment', []),
+            'location' => $request->get('location', ''),
+            'verified_only' => $request->get('verified_only', false),
+        ];
+
+        $talentsQuery = User::where('user_type', 'student')
+            ->whereHas('profile');
+
+        // Apply filters (same as index method)
+        if (!empty($filters['skills'])) {
+            $talentsQuery->whereHas('profile', function ($query) use ($filters) {
+                foreach ($filters['skills'] as $skill) {
+                    $query->whereJsonContains('skills', $skill);
+                }
+            });
+        }
+
+        if (!empty($filters['location'])) {
+            $talentsQuery->whereHas('profile', function ($query) use ($filters) {
+                $query->where('location', 'ILIKE', '%' . $filters['location'] . '%');
+            });
+        }
+
+        if ($filters['verified_only']) {
+            $talentsQuery->whereNotNull('email_verified_at');
+        }
+
+        $talents = $talentsQuery->with(['profile'])->get();
+
+        $filename = 'talents_' . date('Y-m-d') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function () use ($talents) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['Name', 'Email', 'Title', 'Location', 'Skills', 'Verified', 'Projects Count']);
+
+            foreach ($talents as $talent) {
+                $profile = $talent->profile ?? null;
+                $skills = is_array($profile->skills ?? null) ? implode(', ', $profile->skills) : 'N/A';
+
+                fputcsv($file, [
+                    $talent->name,
+                    $talent->email,
+                    $profile->headline ?? 'N/A',
+                    $profile->location ?? 'N/A',
+                    $skills,
+                    $talent->email_verified_at ? 'Yes' : 'No',
+                    $profile->projects_count ?? 0,
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
      * Export saved talents to CSV
      * IMPLEMENTED: Data dari Supabase PostgreSQL
      */

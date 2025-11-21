@@ -92,6 +92,8 @@ Route::middleware('guest')->group(function () {
     Route::post('/register/student', [RegisterController::class, 'registerStudent'])->name('register.student.submit');
     Route::get('/register/institution', [RegisterController::class, 'showInstitutionForm'])->name('register.institution');
     Route::post('/register/institution', [RegisterController::class, 'registerInstitution'])->name('register.institution.submit');
+    Route::get('/register/company', [RegisterController::class, 'showCompanyForm'])->name('register.company');
+    Route::post('/register/company', [RegisterController::class, 'registerCompany'])->name('register.company.submit');
     Route::post('/validation/student/step', [ValidationController::class, 'validateStudentStep'])->name('validation.student.step');
     
     // forgot password
@@ -352,6 +354,8 @@ Route::middleware(['auth', 'check.user.type:company'])->prefix('company')->name(
         Route::get('/', [CompanyTalentController::class, 'index'])->name('index');
         Route::get('/saved', [CompanyTalentController::class, 'saved'])->name('saved');
         Route::get('/leaderboard', [CompanyTalentController::class, 'leaderboard'])->name('leaderboard');
+        Route::get('/compare', [CompanyTalentController::class, 'compare'])->name('compare');
+        Route::get('/export', [CompanyTalentController::class, 'export'])->name('export');
         Route::post('/{id}/toggle-save', [CompanyTalentController::class, 'toggleSave'])->name('toggle-save');
         Route::post('/{id}/contact', [CompanyTalentController::class, 'contact'])->name('contact');
         Route::get('/{id}', [CompanyTalentController::class, 'show'])->name('show');

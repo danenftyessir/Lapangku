@@ -19,6 +19,129 @@
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        {{-- Quick Actions Panel --}}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6 fade-in-up gpu-accelerate">
+            <h2 class="text-lg font-bold text-gray-900 mb-4">Aksi Cepat</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {{-- Save Current Search --}}
+                <button @click="saveCurrentSearch()"
+                        class="flex items-center gap-3 p-4 rounded-lg border-2 border-dashed border-gray-200 hover:border-violet-400 hover:bg-violet-50 transition-all group">
+                    <div class="flex-shrink-0 w-10 h-10 bg-violet-100 rounded-lg flex items-center justify-center group-hover:bg-violet-200 transition-colors">
+                        <svg class="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <p class="text-sm font-semibold text-gray-900">Simpan Pencarian</p>
+                        <p class="text-xs text-gray-500">Filter saat ini</p>
+                    </div>
+                </button>
+
+                {{-- Compare Talents --}}
+                <button @click="toggleComparisonMode()"
+                        :class="comparisonMode ? 'border-violet-400 bg-violet-50' : 'border-gray-200 hover:border-blue-400 hover:bg-blue-50'"
+                        class="flex items-center gap-3 p-4 rounded-lg border-2 border-dashed transition-all group">
+                    <div class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center transition-colors"
+                         :class="comparisonMode ? 'bg-violet-200' : 'bg-blue-100 group-hover:bg-blue-200'">
+                        <svg class="w-5 h-5" :class="comparisonMode ? 'text-violet-600' : 'text-blue-600'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <p class="text-sm font-semibold text-gray-900" x-text="comparisonMode ? 'Mode Aktif' : 'Bandingkan'"></p>
+                        <p class="text-xs text-gray-500" x-text="selectedForComparison.length + ' dipilih'"></p>
+                    </div>
+                </button>
+
+                {{-- Export List --}}
+                <a href="{{ route('company.talents.export') }}"
+                   class="flex items-center gap-3 p-4 rounded-lg border-2 border-dashed border-gray-200 hover:border-green-400 hover:bg-green-50 transition-all group">
+                    <div class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <p class="text-sm font-semibold text-gray-900">Export CSV</p>
+                        <p class="text-xs text-gray-500">Data talenta</p>
+                    </div>
+                </a>
+
+                {{-- Browse Saved --}}
+                <a href="{{ route('company.talents.saved') }}"
+                   class="flex items-center gap-3 p-4 rounded-lg border-2 border-dashed border-gray-200 hover:border-amber-400 hover:bg-amber-50 transition-all group">
+                    <div class="flex-shrink-0 w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center group-hover:bg-amber-200 transition-colors">
+                        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <p class="text-sm font-semibold text-gray-900">Talenta Tersimpan</p>
+                        <p class="text-xs text-gray-500">Lihat koleksi</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        {{-- Saved Searches Section --}}
+        <div x-show="savedSearches.length > 0" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6 fade-in-up gpu-accelerate">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm font-semibold text-gray-900">Pencarian Tersimpan</h3>
+                <button @click="clearAllSavedSearches()" class="text-xs text-red-600 hover:text-red-700 font-medium">
+                    Hapus Semua
+                </button>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <template x-for="(search, index) in savedSearches" :key="index">
+                    <div class="group relative">
+                        <button @click="loadSavedSearch(index)"
+                                class="flex items-center gap-2 px-3 py-1.5 bg-violet-50 text-violet-700 rounded-lg text-xs font-medium hover:bg-violet-100 transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                            </svg>
+                            <span x-text="search.name"></span>
+                        </button>
+                        <button @click="removeSavedSearch(index)"
+                                class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        {{-- Comparison Mode Banner --}}
+        <div x-show="comparisonMode" class="bg-violet-50 border border-violet-200 rounded-xl p-4 mb-6 fade-in-up">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-violet-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-violet-900">Mode Perbandingan Aktif</p>
+                        <p class="text-xs text-violet-700">Pilih hingga 3 talenta untuk dibandingkan (<span x-text="selectedForComparison.length"></span>/3 dipilih)</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button @click="compareSelected()"
+                            :disabled="selectedForComparison.length < 2"
+                            :class="selectedForComparison.length >= 2 ? 'bg-violet-600 hover:bg-violet-700' : 'bg-gray-300 cursor-not-allowed'"
+                            class="px-4 py-2 text-white text-sm font-semibold rounded-lg transition-colors">
+                        Bandingkan
+                    </button>
+                    <button @click="toggleComparisonMode()"
+                            class="px-4 py-2 bg-white text-violet-700 text-sm font-semibold rounded-lg hover:bg-violet-100 transition-colors">
+                        Batalkan
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div class="flex flex-col lg:flex-row gap-6">
 
             {{-- sidebar filters --}}
@@ -166,8 +289,23 @@
                     </div>
                 </div>
 
+                {{-- empty state --}}
+                <div x-show="filteredTalents.length === 0" class="text-center py-16 fade-in-up">
+                    <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Tidak Ada Talenta Ditemukan</h3>
+                    <p class="text-gray-500 mb-6">Coba ubah filter pencarian atau hapus beberapa kriteria untuk melihat lebih banyak hasil.</p>
+                    <button @click="resetFilters()"
+                            class="px-6 py-2.5 bg-violet-600 text-white font-semibold rounded-lg hover:bg-violet-700 transition-colors">
+                        Reset Filter
+                    </button>
+                </div>
+
                 {{-- grid view --}}
-                <div x-show="viewMode === 'grid'"
+                <div x-show="viewMode === 'grid' && filteredTalents.length > 0"
                      class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                     <template x-for="(talent, index) in filteredTalents" :key="talent.id">
                         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover-lift gpu-accelerate fade-in-up"
@@ -175,8 +313,8 @@
 
                             {{-- header dengan avatar dan bookmark --}}
                             <div class="flex items-start justify-between mb-3">
-                                <div class="flex items-center gap-3">
-                                    <div class="relative">
+                                <a :href="'/company/talents/' + talent.id" class="flex items-center gap-3 flex-1 min-w-0 hover:opacity-80 transition-opacity">
+                                    <div class="relative shrink-0">
                                         <img :src="'/'+talent.avatar"
                                              :alt="talent.name"
                                              class="w-12 h-12 rounded-full object-cover"
@@ -184,16 +322,30 @@
                                         <span x-show="talent.online"
                                               class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
                                     </div>
-                                    <div>
-                                        <h3 class="font-semibold text-gray-900 text-sm" x-text="talent.name"></h3>
-                                        <p class="text-xs text-gray-500" x-text="talent.title"></p>
+                                    <div class="min-w-0">
+                                        <h3 class="font-semibold text-gray-900 text-sm truncate" x-text="talent.name"></h3>
+                                        <p class="text-xs text-gray-500 truncate" x-text="talent.title"></p>
                                     </div>
+                                </a>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    {{-- Comparison checkbox --}}
+                                    <div x-show="comparisonMode">
+                                        <input type="checkbox"
+                                               :checked="isSelectedForComparison(talent.id)"
+                                               @change="toggleTalentSelection(talent.id)"
+                                               :disabled="!isSelectedForComparison(talent.id) && selectedForComparison.length >= 3"
+                                               class="w-5 h-5 text-violet-600 border-gray-300 rounded focus:ring-violet-500 cursor-pointer">
+                                    </div>
+                                    {{-- Bookmark button --}}
+                                    <button @click="toggleSave(talent.id)"
+                                            x-show="!comparisonMode"
+                                            :class="isSaved(talent.id) ? 'text-amber-500' : 'text-gray-400 hover:text-amber-500'"
+                                            class="transition-colors">
+                                        <svg class="w-5 h-5" :fill="isSaved(talent.id) ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                                        </svg>
+                                    </button>
                                 </div>
-                                <button class="text-gray-400 hover:text-violet-600 transition-colors">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
-                                    </svg>
-                                </button>
                             </div>
 
                             {{-- verified badge --}}
@@ -260,8 +412,24 @@
                     </template>
                 </div>
 
+                {{-- load more button --}}
+                <div x-show="filteredTalents.length > 0 && hasMore" class="text-center mt-8">
+                    <button @click="loadMore()"
+                            :disabled="loading"
+                            class="px-6 py-3 bg-white border border-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span x-show="!loading">Muat Lebih Banyak</span>
+                        <span x-show="loading" class="flex items-center gap-2">
+                            <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Memuat...
+                        </span>
+                    </button>
+                </div>
+
                 {{-- list view --}}
-                <div x-show="viewMode === 'list'" class="space-y-3">
+                <div x-show="viewMode === 'list' && filteredTalents.length > 0" class="space-y-3">
                     <template x-for="(talent, index) in filteredTalents" :key="talent.id">
                         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover-lift gpu-accelerate">
                             <div class="flex items-center gap-4">
@@ -306,7 +474,7 @@
                 </div>
 
                 {{-- leaderboard view --}}
-                <div x-show="viewMode === 'leaderboard'" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div x-show="viewMode === 'leaderboard' && filteredTalents.length > 0" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <table class="w-full">
                         <thead class="bg-gray-50 border-b border-gray-100">
                             <tr>
@@ -450,7 +618,28 @@ function talentBrowser() {
             impact_score_max: 100,
             verified_only: false
         },
-        talents: @json($talents),
+        talents: @json($talents->items()),
+        savedTalents: [], // IDs of saved talents
+        savedSearches: [],
+        comparisonMode: false,
+        selectedForComparison: [],
+        loading: false,
+        hasMore: {{ $talents->hasMorePages() ? 'true' : 'false' }},
+        currentPage: {{ $talents->currentPage() }},
+
+        init() {
+            // Load saved searches dari localStorage
+            const saved = localStorage.getItem('company_saved_searches');
+            if (saved) {
+                this.savedSearches = JSON.parse(saved);
+            }
+
+            // Load saved talents dari localStorage
+            const savedTalents = localStorage.getItem('company_saved_talents');
+            if (savedTalents) {
+                this.savedTalents = JSON.parse(savedTalents);
+            }
+        },
 
         get filteredTalents() {
             let result = this.talents;
@@ -488,9 +677,158 @@ function talentBrowser() {
         },
 
         applyFilters() {
-            // TO DO: implementasi server-side filtering via AJAX
-            // untuk saat ini filtering dilakukan client-side
             console.log('Filters applied:', this.filters);
+        },
+
+        // Saved Searches functionality
+        saveCurrentSearch() {
+            const name = prompt('Beri nama untuk pencarian ini:');
+            if (!name) return;
+
+            const search = {
+                name: name,
+                filters: JSON.parse(JSON.stringify(this.filters))
+            };
+
+            this.savedSearches.push(search);
+            localStorage.setItem('company_saved_searches', JSON.stringify(this.savedSearches));
+
+            window.showNotification('Pencarian berhasil disimpan!', 'success');
+        },
+
+        loadSavedSearch(index) {
+            const search = this.savedSearches[index];
+            if (search) {
+                this.filters = JSON.parse(JSON.stringify(search.filters));
+                window.showNotification('Pencarian dimuat: ' + search.name, 'info');
+            }
+        },
+
+        removeSavedSearch(index) {
+            this.savedSearches.splice(index, 1);
+            localStorage.setItem('company_saved_searches', JSON.stringify(this.savedSearches));
+            window.showNotification('Pencarian dihapus', 'info');
+        },
+
+        clearAllSavedSearches() {
+            if (confirm('Hapus semua pencarian tersimpan?')) {
+                this.savedSearches = [];
+                localStorage.removeItem('company_saved_searches');
+                window.showNotification('Semua pencarian dihapus', 'info');
+            }
+        },
+
+        resetFilters() {
+            this.filters = {
+                skills: [],
+                sdg_alignment: [],
+                location: '',
+                impact_score_min: 0,
+                impact_score_max: 100,
+                verified_only: false
+            };
+            window.showNotification('Filter direset', 'info');
+        },
+
+        // Comparison Mode functionality
+        toggleComparisonMode() {
+            this.comparisonMode = !this.comparisonMode;
+            if (!this.comparisonMode) {
+                this.selectedForComparison = [];
+            }
+        },
+
+        toggleTalentSelection(talentId) {
+            const index = this.selectedForComparison.indexOf(talentId);
+            if (index > -1) {
+                this.selectedForComparison.splice(index, 1);
+            } else if (this.selectedForComparison.length < 3) {
+                this.selectedForComparison.push(talentId);
+            }
+        },
+
+        isSelectedForComparison(talentId) {
+            return this.selectedForComparison.includes(talentId);
+        },
+
+        compareSelected() {
+            if (this.selectedForComparison.length < 2) {
+                window.showNotification('Pilih minimal 2 talenta untuk dibandingkan', 'warning');
+                return;
+            }
+
+            // Redirect ke comparison page dengan query params
+            const ids = this.selectedForComparison.join(',');
+            window.location.href = `/company/talents/compare?ids=${ids}`;
+        },
+
+        // Save/Bookmark functionality
+        async toggleSave(talentId) {
+            try {
+                const response = await fetch(`/company/talents/${talentId}/toggle-save`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    if (data.action === 'saved') {
+                        this.savedTalents.push(talentId);
+                        window.showNotification('Talenta berhasil disimpan!', 'success');
+                    } else {
+                        const index = this.savedTalents.indexOf(talentId);
+                        if (index > -1) {
+                            this.savedTalents.splice(index, 1);
+                        }
+                        window.showNotification('Talenta dihapus dari tersimpan', 'info');
+                    }
+
+                    // Update localStorage
+                    localStorage.setItem('company_saved_talents', JSON.stringify(this.savedTalents));
+                }
+            } catch (error) {
+                console.error('Error toggling save:', error);
+                window.showNotification('Terjadi kesalahan', 'error');
+            }
+        },
+
+        isSaved(talentId) {
+            return this.savedTalents.includes(talentId);
+        },
+
+        // Load More functionality
+        async loadMore() {
+            if (this.loading || !this.hasMore) return;
+
+            this.loading = true;
+            const nextPage = this.currentPage + 1;
+
+            try {
+                const response = await fetch(`{{ route('company.talents.index') }}?page=${nextPage}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                // Extract talents data from response (this would need server-side JSON response)
+                // For now, just show a message
+                window.showNotification('Fitur load more memerlukan implementasi server-side', 'info');
+
+                this.hasMore = false; // Disable for now
+            } catch (error) {
+                console.error('Error loading more:', error);
+                window.showNotification('Terjadi kesalahan saat memuat data', 'error');
+            } finally {
+                this.loading = false;
+            }
         }
     }
 }

@@ -59,6 +59,35 @@
                            class="text-gray-700 hover:text-black px-3 py-2 text-sm font-semibold transition-all duration-300 rounded-lg hover:bg-gray-100 {{ request()->routeIs('institution.reviews.*') ? 'text-black bg-gray-100' : '' }}">
                             Ulasan
                         </a>
+                    @elseif(Auth::user()->isCompany())
+                        <a href="{{ route('company.dashboard') }}"
+                           class="text-gray-700 hover:text-black px-3 py-2 text-sm font-semibold transition-all duration-300 rounded-lg hover:bg-gray-100 {{ request()->routeIs('company.dashboard') ? 'text-black bg-gray-100' : '' }}">
+                            Dashboard
+                        </a>
+                        <a href="{{ route('company.talents.index') }}"
+                           class="text-gray-700 hover:text-black px-3 py-2 text-sm font-semibold transition-all duration-300 rounded-lg hover:bg-gray-100 {{ request()->routeIs('company.talents.index') ? 'text-black bg-gray-100' : '' }}">
+                            Talents
+                        </a>
+                        <a href="{{ route('company.jobs.index') }}"
+                           class="text-gray-700 hover:text-black px-3 py-2 text-sm font-semibold transition-all duration-300 rounded-lg hover:bg-gray-100 {{ request()->routeIs('company.jobs.*') ? 'text-black bg-gray-100' : '' }}">
+                            Jobs
+                        </a>
+                        <a href="{{ route('company.applications.index') }}"
+                           class="text-gray-700 hover:text-black px-3 py-2 text-sm font-semibold transition-all duration-300 rounded-lg hover:bg-gray-100 {{ request()->routeIs('company.applications.*') ? 'text-black bg-gray-100' : '' }}">
+                            Applications
+                        </a>
+                        <a href="{{ route('company.talents.saved') }}"
+                           class="text-gray-700 hover:text-black px-3 py-2 text-sm font-semibold transition-all duration-300 rounded-lg hover:bg-gray-100 {{ request()->routeIs('company.talents.saved') ? 'text-black bg-gray-100' : '' }}">
+                            Saved Talents
+                        </a>
+                        <a href="{{ route('company.profile.index') }}"
+                           class="text-gray-700 hover:text-black px-3 py-2 text-sm font-semibold transition-all duration-300 rounded-lg hover:bg-gray-100 {{ request()->routeIs('company.profile.*') ? 'text-black bg-gray-100' : '' }}">
+                            Company Profile
+                        </a>
+                        <a href="{{ route('company.talents.leaderboard') }}"
+                           class="text-gray-700 hover:text-black px-3 py-2 text-sm font-semibold transition-all duration-300 rounded-lg hover:bg-gray-100 {{ request()->routeIs('company.talents.leaderboard') ? 'text-black bg-gray-100' : '' }}">
+                            Leaderboard
+                        </a>
                     @endif
                     
                     {{-- notification icon --}}
@@ -120,12 +149,34 @@
                                         Network
                                     </a>
                                 @elseif(Auth::user()->isInstitution())
-                                    <a href="{{ route('institution.profile.index') }}" 
+                                    <a href="{{ route('institution.profile.index') }}"
                                        class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
                                         <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                                         </svg>
                                         Profil Instansi
+                                    </a>
+                                @elseif(Auth::user()->isCompany())
+                                    <a href="{{ route('company.profile.index') }}"
+                                       class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                        <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                        </svg>
+                                        Profil Perusahaan
+                                    </a>
+                                    <a href="{{ route('company.jobs.index') }}"
+                                       class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                        <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                        </svg>
+                                        Job Postings
+                                    </a>
+                                    <a href="{{ route('company.talents.saved') }}"
+                                       class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                        <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                                        </svg>
+                                        Saved Talents
                                     </a>
                                 @endif
                             </div>
@@ -229,29 +280,58 @@
                         Wishlist
                     </a>
                 @elseif(Auth::user()->isInstitution())
-                    <a href="{{ route('institution.dashboard') }}" 
+                    <a href="{{ route('institution.dashboard') }}"
                        class="block px-4 py-3 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors {{ request()->routeIs('institution.dashboard') ? 'text-blue-600 bg-blue-50' : '' }}">
                         Dashboard
                     </a>
-                    <a href="{{ route('institution.problems.index') }}" 
+                    <a href="{{ route('institution.problems.index') }}"
                        class="block px-4 py-3 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors {{ request()->routeIs('institution.problems.*') ? 'text-blue-600 bg-blue-50' : '' }}">
                         Masalah
                     </a>
-                    <a href="{{ route('institution.applications.index') }}" 
+                    <a href="{{ route('institution.applications.index') }}"
                        class="block px-4 py-3 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors {{ request()->routeIs('institution.applications.*') ? 'text-blue-600 bg-blue-50' : '' }}">
                         Aplikasi
                     </a>
-                    <a href="{{ route('institution.projects.index') }}" 
+                    <a href="{{ route('institution.projects.index') }}"
                        class="block px-4 py-3 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors {{ request()->routeIs('institution.projects.*') ? 'text-blue-600 bg-blue-50' : '' }}">
                         Proyek
                     </a>
-                    <a href="{{ route('institution.reviews.index') }}" 
+                    <a href="{{ route('institution.reviews.index') }}"
                        class="block px-4 py-3 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors {{ request()->routeIs('institution.reviews.*') ? 'text-blue-600 bg-blue-50' : '' }}">
                         Ulasan
                     </a>
-                    <a href="{{ route('institution.profile.index') }}" 
+                    <a href="{{ route('institution.profile.index') }}"
                        class="block px-4 py-3 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors">
                         Profil Instansi
+                    </a>
+                @elseif(Auth::user()->isCompany())
+                    <a href="{{ route('company.dashboard') }}"
+                       class="block px-4 py-3 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors {{ request()->routeIs('company.dashboard') ? 'text-blue-600 bg-blue-50' : '' }}">
+                        Dashboard
+                    </a>
+                    <a href="{{ route('company.talents.index') }}"
+                       class="block px-4 py-3 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors {{ request()->routeIs('company.talents.index') ? 'text-blue-600 bg-blue-50' : '' }}">
+                        Talents
+                    </a>
+                    <a href="{{ route('company.jobs.index') }}"
+                       class="block px-4 py-3 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors {{ request()->routeIs('company.jobs.*') ? 'text-blue-600 bg-blue-50' : '' }}">
+                        Jobs
+                    </a>
+                    <a href="{{ route('company.applications.index') }}"
+                       class="block px-4 py-3 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors {{ request()->routeIs('company.applications.*') ? 'text-blue-600 bg-blue-50' : '' }}">
+                        Applications
+                    </a>
+                    <a href="{{ route('company.talents.saved') }}"
+                       class="block px-4 py-3 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors {{ request()->routeIs('company.talents.saved') ? 'text-blue-600 bg-blue-50' : '' }}">
+                        Saved Talents
+                    </a>
+                    <a href="{{ route('company.profile.index') }}"
+                       class="block px-4 py-3 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors {{ request()->routeIs('company.profile.*') ? 'text-blue-600 bg-blue-50' : '' }}">
+                        Company Profile
+                    </a>
+                    <a href="{{ route('company.talents.leaderboard') }}"
+                       class="block px-4 py-3 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors {{ request()->routeIs('company.talents.leaderboard') ? 'text-blue-600 bg-blue-50' : '' }}">
+                        Leaderboard
                     </a>
                 @endif
                 
