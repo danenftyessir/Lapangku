@@ -105,6 +105,38 @@
                             </div>
                         </div>
                     </a>
+
+                    <!-- company card -->
+                    <a href="{{ route('register.company') }}"
+                       class="group block p-6 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                        <div class="flex items-center">
+                            <!-- icon -->
+                            <div class="flex-shrink-0">
+                                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-500 transition-colors">
+                                    <svg class="w-8 h-8 text-blue-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- content -->
+                            <div class="ml-6 flex-1">
+                                <h3 class="text-2xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                    Company
+                                </h3>
+                                <p class="text-gray-600 leading-relaxed">
+                                    Daftar sebagai perusahaan untuk mencari talent dan posting lowongan
+                                </p>
+                            </div>
+
+                            <!-- arrow -->
+                            <div class="ml-4">
+                                <svg class="w-6 h-6 text-gray-400 group-hover:text-blue-600 transform group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
                 </div>
 
                 <!-- login link -->

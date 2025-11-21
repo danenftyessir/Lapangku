@@ -22,3 +22,6 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Railway setup dengan credentials (jangan di-commit)
+RAILWAY_SETUP.md
