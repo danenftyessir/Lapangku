@@ -525,20 +525,6 @@ class RegisterController extends Controller
 
             DB::commit();
 
-            // Kirim email verifikasi
-            // Karena QUEUE_CONNECTION=database, email akan masuk queue untuk dikirim async
-            try {
-                event(new Registered($user));
-                Log::info('Email verification event dispatched to queue');
-            } catch (\Exception $e) {
-                // Log error tapi jangan block registrasi
-                Log::warning('Failed to dispatch email verification event', [
-                    'user_id' => $user->id,
-                    'error' => $e->getMessage()
-                ]);
-                // Registrasi tetap berhasil meski email gagal
-            }
-
             Log::info('Company registered successfully', [
                 'user_id' => $user->id,
                 'company_id' => $company->id,
@@ -546,11 +532,36 @@ class RegisterController extends Controller
                 'company_name' => $company->name
             ]);
 
+            // Kirim email verifikasi SETELAH response dikirim (async)
+            // Ini mencegah blocking redirect jika email server lambat
+            $userId = $user->id;
+            dispatch(function () use ($userId) {
+                try {
+                    $user = User::find($userId);
+                    if ($user) {
+                        event(new Registered($user));
+                        Log::info('Email verification event dispatched', ['user_id' => $userId]);
+                    }
+                } catch (\Exception $e) {
+                    Log::warning('Failed to dispatch email verification event', [
+                        'user_id' => $userId,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            })->afterResponse();
+
             // TIDAK auto-login user - konsisten dengan institution
             // User akan login manual setelah registrasi
 
+            Log::info('Preparing response for company registration', [
+                'user_id' => $user->id,
+                'is_ajax' => $request->ajax(),
+                'expects_json' => $request->expectsJson()
+            ]);
+
             // cek apakah request adalah AJAX
             if ($request->expectsJson() || $request->ajax()) {
+                Log::info('Returning JSON response for company registration');
                 return response()->json([
                     'success' => true,
                     'message' => 'Registrasi Berhasil! Silakan Login Untuk Melanjutkan.',
@@ -567,6 +578,7 @@ class RegisterController extends Controller
             }
 
             // redirect ke homepage dengan pesan sukses
+            Log::info('Redirecting to home after company registration');
             return redirect()
                 ->route('home')
                 ->with('success', 'Registrasi Berhasil! Silakan Login Untuk Melanjutkan.');
