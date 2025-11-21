@@ -483,7 +483,7 @@ class RegisterController extends Controller
                 'phone' => $request->phone,
                 'founded_year' => $request->founded_year,
                 'employee_count' => $this->getEmployeeCountFromSize($request->company_size),
-                'verification_status' => 'pending',
+                'verification_status' => 'pending_verification',
                 'logo' => null, // akan diupdate jika ada logo
             ];
 

@@ -229,7 +229,7 @@ class ProfileController extends Controller
 
         // IMPLEMENTED: Update verification status di Supabase PostgreSQL
         $company->update([
-            'verification_status' => 'pending',
+            'verification_status' => 'pending_verification',
             'verification_documents' => json_encode($documentUrls),
         ]);
 

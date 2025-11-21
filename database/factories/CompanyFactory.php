@@ -54,7 +54,7 @@ class CompanyFactory extends Factory
             'phone' => '+62' . fake()->numerify('##########'),
             'employee_count' => fake()->randomElement($companySizes),
             'founded_year' => fake()->numberBetween(1980, 2023),
-            'verification_status' => fake()->randomElement(['pending', 'verified', 'rejected']),
+            'verification_status' => fake()->randomElement(['pending_verification', 'verified', 'rejected']),
             'verified_at' => fake()->optional(0.6)->dateTimeBetween('-1 year', 'now'),
         ];
     }
@@ -76,7 +76,7 @@ class CompanyFactory extends Factory
     public function pending(): static
     {
         return $this->state(fn (array $attributes) => [
-            'verification_status' => 'pending',
+            'verification_status' => 'pending_verification',
             'verified_at' => null,
         ]);
     }
