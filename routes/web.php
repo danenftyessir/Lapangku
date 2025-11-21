@@ -351,6 +351,7 @@ Route::middleware(['auth', 'check.user.type:company'])->prefix('company')->name(
     Route::prefix('talents')->name('talents.')->group(function () {
         Route::get('/', [CompanyTalentController::class, 'index'])->name('index');
         Route::get('/saved', [CompanyTalentController::class, 'saved'])->name('saved');
+        Route::get('/leaderboard', [CompanyTalentController::class, 'leaderboard'])->name('leaderboard');
         Route::post('/{id}/toggle-save', [CompanyTalentController::class, 'toggleSave'])->name('toggle-save');
         Route::post('/{id}/contact', [CompanyTalentController::class, 'contact'])->name('contact');
         Route::get('/{id}', [CompanyTalentController::class, 'show'])->name('show');
@@ -364,14 +365,25 @@ Route::middleware(['auth', 'check.user.type:company'])->prefix('company')->name(
         Route::post('/{id}/shortlist', [CompanyJobApplicationController::class, 'shortlist'])->name('shortlist');
         Route::post('/{id}/reject', [CompanyJobApplicationController::class, 'reject'])->name('reject');
         Route::post('/{id}/hire', [CompanyJobApplicationController::class, 'hire'])->name('hire');
+        Route::post('/{id}/rating', [CompanyJobApplicationController::class, 'addRating'])->name('add-rating');
+        Route::post('/{id}/notes', [CompanyJobApplicationController::class, 'addNotes'])->name('add-notes');
+        Route::post('/bulk-update', [CompanyJobApplicationController::class, 'bulkUpdateStatus'])->name('bulk-update');
+        Route::get('/export', [CompanyJobApplicationController::class, 'export'])->name('export');
     });
 
-    // TO DO: tambahkan routes untuk company profile
-    // Route::prefix('profile')->name('profile.')->group(function () {
-    //     Route::get('/', [CompanyProfileController::class, 'index'])->name('index');
-    //     Route::get('/edit', [CompanyProfileController::class, 'edit'])->name('edit');
-    //     Route::put('/', [CompanyProfileController::class, 'update'])->name('update');
-    // });
+    // company profile
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Company\ProfileController::class, 'index'])->name('index');
+        Route::get('/edit', [\App\Http\Controllers\Company\ProfileController::class, 'edit'])->name('edit');
+        Route::put('/', [\App\Http\Controllers\Company\ProfileController::class, 'update'])->name('update');
+        Route::post('/logo', [\App\Http\Controllers\Company\ProfileController::class, 'uploadLogo'])->name('upload-logo');
+        Route::delete('/logo', [\App\Http\Controllers\Company\ProfileController::class, 'deleteLogo'])->name('delete-logo');
+        Route::post('/verification', [\App\Http\Controllers\Company\ProfileController::class, 'requestVerification'])->name('request-verification');
+        Route::put('/settings', [\App\Http\Controllers\Company\ProfileController::class, 'updateSettings'])->name('update-settings');
+    });
+
+    // talent export
+    Route::get('/talents/export-saved', [CompanyTalentController::class, 'exportSaved'])->name('talents.export-saved');
 });
 
 /*

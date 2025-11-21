@@ -43,15 +43,30 @@ class Company extends Model
         return $this->belongsTo(Province::class);
     }
 
-    // TO DO: relasi ke job postings (lowongan kerja)
-    // public function jobPostings()
-    // {
-    //     return $this->hasMany(JobPosting::class);
-    // }
+    // relasi ke job postings (lowongan kerja)
+    // IMPLEMENTED: Data langsung dari Supabase PostgreSQL
+    public function jobPostings()
+    {
+        return $this->hasMany(JobPosting::class);
+    }
 
-    // TO DO: relasi ke job applications
-    // public function jobApplications()
-    // {
-    //     return $this->hasManyThrough(JobApplication::class, JobPosting::class);
-    // }
+    // relasi ke job applications melalui job postings
+    // IMPLEMENTED: Data langsung dari Supabase PostgreSQL
+    public function jobApplications()
+    {
+        return $this->hasManyThrough(JobApplication::class, JobPosting::class);
+    }
+
+    // relasi ke saved talents (many-to-many via pivot table)
+    // IMPLEMENTED: Data langsung dari Supabase PostgreSQL
+    public function savedTalents()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'saved_talents',
+            'company_id',
+            'user_id'
+        )->withPivot('category', 'notes', 'saved_at')
+            ->withTimestamps();
+    }
 }

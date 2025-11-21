@@ -24,6 +24,7 @@ class CheckUserType
             $redirectRoute = match(auth()->user()->user_type) {
                 'student' => 'student.dashboard',
                 'institution' => 'institution.dashboard',
+                'company' => 'company.dashboard',
                 default => 'home',
             };
 
