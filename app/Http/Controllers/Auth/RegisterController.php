@@ -525,8 +525,19 @@ class RegisterController extends Controller
 
             DB::commit();
 
-            // picu event bahwa user baru telah terdaftar (untuk kirim email verifikasi)
-            event(new Registered($user));
+            // Kirim email verifikasi
+            // Karena QUEUE_CONNECTION=database, email akan masuk queue untuk dikirim async
+            try {
+                event(new Registered($user));
+                Log::info('Email verification event dispatched to queue');
+            } catch (\Exception $e) {
+                // Log error tapi jangan block registrasi
+                Log::warning('Failed to dispatch email verification event', [
+                    'user_id' => $user->id,
+                    'error' => $e->getMessage()
+                ]);
+                // Registrasi tetap berhasil meski email gagal
+            }
 
             Log::info('Company registered successfully', [
                 'user_id' => $user->id,
@@ -535,26 +546,30 @@ class RegisterController extends Controller
                 'company_name' => $company->name
             ]);
 
-            // auto-login user setelah registrasi berhasil
-            Auth::login($user);
-
-            // refresh session untuk memuat data terbaru
-            $user = $user->fresh(['company']);
-            Auth::setUser($user);
+            // TIDAK auto-login user - konsisten dengan institution
+            // User akan login manual setelah registrasi
 
             // cek apakah request adalah AJAX
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Registrasi Berhasil! Selamat Datang Di Lapangku.',
-                    'redirect_url' => route('company.dashboard')
-                ], 200);
+                    'message' => 'Registrasi Berhasil! Silakan Login Untuk Melanjutkan.',
+                    'data' => [
+                        'company' => [
+                            'id' => $company->id,
+                            'name' => $company->name,
+                            'email' => $user->email,
+                            'verification_status' => $company->verification_status ?? 'pending_verification',
+                        ],
+                        'redirect_url' => route('home')
+                    ]
+                ], 201);
             }
 
-            // redirect ke dashboard company dengan pesan sukses
+            // redirect ke homepage dengan pesan sukses
             return redirect()
-                ->route('company.dashboard')
-                ->with('success', 'Selamat Datang Di Lapangku! Akun Perusahaan Anda Berhasil Dibuat. Mulai Posting Lowongan Dan Temukan Talent Terbaik.');
+                ->route('home')
+                ->with('success', 'Registrasi Berhasil! Silakan Login Untuk Melanjutkan.');
 
         } catch (\Exception $e) {
             DB::rollBack();

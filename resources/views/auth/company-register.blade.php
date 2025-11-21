@@ -897,6 +897,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.querySelector('form');
             const validationAlert = document.getElementById('validation-alert');
+            let submissionTimeout = null;
 
             if (form) {
                 form.addEventListener('submit', function(e) {
@@ -945,6 +946,15 @@
                     if (submitBtn) {
                         submitBtn.disabled = true;
                     }
+
+                    // Set timeout untuk mencegah stuck loading
+                    // Jika setelah 30 detik tidak ada response, tampilkan pesan error
+                    submissionTimeout = setTimeout(function() {
+                        alert('Pendaftaran memakan waktu lebih lama dari biasanya. Silakan cek email Anda atau coba login jika pendaftaran berhasil.');
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                        }
+                    }, 30000); // 30 detik
                 });
 
                 // Remove error styling when user starts typing
@@ -959,6 +969,13 @@
                     });
                 });
             }
+
+            // Clear timeout jika halaman unload (form berhasil submit)
+            window.addEventListener('beforeunload', function() {
+                if (submissionTimeout) {
+                    clearTimeout(submissionTimeout);
+                }
+            });
         });
     </script>
 
