@@ -64,22 +64,38 @@ class TalentController extends Controller
             $talentsQuery->whereNotNull('email_verified_at');
         }
 
-        $talents = $talentsQuery->with(['student'])
+        $talents = $talentsQuery->with(['student.university'])
             ->orderBy('created_at', 'desc')
             ->paginate(12);
 
         // Transform data untuk view
         $talents->getCollection()->transform(function ($talent) {
             $student = $talent->student;
+
+            // Get SDG alignment (dapat ditambahkan kolom di student table jika perlu)
+            $sdgBadges = [];
+            // Contoh SDG default - nanti bisa diambil dari database
+            $defaultSdgs = [
+                ['id' => 4, 'name' => 'Quality Education', 'color' => 'blue'],
+                ['id' => 8, 'name' => 'Decent Work', 'color' => 'red'],
+            ];
+            $sdgBadges = $defaultSdgs;
+
+            // Get location from university or student data
+            $location = 'Indonesia'; // Default location
+            if ($student && $student->university) {
+                // Jika ada relasi ke university dengan city/province
+                $location = $student->university->city ?? 'Indonesia';
+            }
+
             return [
                 'id' => $talent->id,
                 'name' => $talent->name,
                 'title' => $student->major ?? 'No Major',
                 'avatar' => $student->profile_photo_path ?? 'default-avatar.jpg',
                 'verified' => !is_null($talent->email_verified_at),
-                'skills' => [], // Skills data if available in student table
-                'sdg_badges' => [], // SDG alignment if available
-                'location' => 'Unknown', // Location if available
+                'sdg_badges' => $sdgBadges,
+                'location' => $location,
                 'projects_completed' => 0, // Projects count if available
                 'success_rate' => 0, // Success rate if available
                 'online' => true, // Could be implemented with last_seen_at
@@ -131,7 +147,7 @@ class TalentController extends Controller
         // IMPLEMENTED: Ambil data talent dari Supabase berdasarkan id
         $talent = User::where('user_type', 'student')
             ->where('id', $id)
-            ->with(['profile', 'repositories', 'projects'])
+            ->with(['student'])
             ->firstOrFail();
 
         // Check if talent is saved by company
@@ -149,7 +165,7 @@ class TalentController extends Controller
 
         // IMPLEMENTED: Ambil data saved talents dari Supabase
         $savedTalents = SavedTalent::where('company_id', $company->id)
-            ->with('user.profile')
+            ->with('user.student')
             ->orderBy('saved_at', 'desc')
             ->get();
 
@@ -160,14 +176,14 @@ class TalentController extends Controller
                 'name' => $category ?: 'Uncategorized',
                 'talents' => $group->map(function ($savedTalent) {
                     $user = $savedTalent->user;
-                    $profile = $user->profile ?? null;
+                    $student = $user->student ?? null;
                     return [
                         'id' => $user->id,
                         'name' => $user->name,
-                        'title' => $profile->headline ?? 'No Title',
-                        'avatar' => $user->avatar ?? 'default-avatar.jpg',
+                        'title' => $student->major ?? 'No Major',
+                        'avatar' => $student->profile_photo_path ?? 'default-avatar.jpg',
                         'verified' => !is_null($user->email_verified_at),
-                        'description' => $profile->bio ?? 'No description',
+                        'description' => 'Student', // Description if available
                         'notes' => $savedTalent->notes,
                     ];
                 })->toArray(),
@@ -262,23 +278,35 @@ class TalentController extends Controller
         // IMPLEMENTED: Ambil data leaderboard talents dari Supabase
         // Sorted by impact score or contribution metrics
         $leaderboardTalents = User::where('user_type', 'student')
-            ->whereHas('profile')
-            ->with('profile')
-            ->orderBy('created_at', 'desc') // Could be ordered by impact_score if available
+            ->whereHas('student')
+            ->with('student.university')
+            ->orderBy('created_at', 'desc')
             ->paginate(20);
 
         // Transform for view
         $leaderboardTalents->getCollection()->transform(function ($talent, $index) use ($request) {
-            $profile = $talent->profile;
+            $student = $talent->student;
+
+            // Get location from university
+            $location = 'Indonesia';
+            if ($student && $student->university) {
+                $location = $student->university->city ?? 'Indonesia';
+            }
+
+            // Default SDG badges
+            $sdgBadge = [
+                'id' => 4,
+                'name' => 'Quality Education',
+                'color' => 'blue'
+            ];
+
             return [
                 'id' => $talent->id,
                 'rank' => ($request->input('page', 1) - 1) * 20 + $index + 1,
                 'name' => $talent->name,
-                'location' => $profile->location ?? 'Unknown',
-                'avatar' => $talent->avatar ?? 'default-avatar.jpg',
-                'impact_score' => $profile->impact_score ?? 0,
-                'skills' => is_array($profile->skills ?? null) ? array_slice($profile->skills, 0, 2) : [],
-                'sdg_badge' => $profile->primary_sdg ?? ['id' => 0, 'name' => 'No SDG'],
+                'location' => $location,
+                'avatar' => $student->profile_photo_path ?? 'default-avatar.jpg',
+                'sdg_badge' => $sdgBadge,
             ];
         });
 

@@ -38,7 +38,7 @@ class ProfileController extends Controller
             'total_jobs' => $company->jobPostings()->count(),
             'active_jobs' => $company->jobPostings()->active()->count(),
             'total_applications' => $company->jobApplications()->count(),
-            'total_hires' => $company->jobApplications()->hired()->count(),
+            'total_hires' => $company->jobApplications()->where('job_applications.status', \App\Models\JobApplication::STATUS_HIRED)->count(),
         ];
 
         return view('company.profile.index', compact('company', 'stats'));
