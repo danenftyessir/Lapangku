@@ -328,7 +328,7 @@
             <div class="w-full max-w-4xl">
                 {{-- logo & header --}}
                 <div class="text-center mb-8">
-                    <img src="{{ asset('karsa-logo.png') }}" alt="Karsa - Karya Anak Bangsa" class="h-24 mx-auto mb-6">
+                    <img src="{{ asset('karsa-logo.png') }}" alt="Karsa - Karya Untuk Bangsa" class="h-24 mx-auto mb-6">
                     <h1 class="text-4xl font-bold text-gray-900 mb-3">Daftar Sebagai Instansi</h1>
                     <p class="text-gray-600 mb-4">Mulai Posting Masalah Dan Temukan Mahasiswa KKN Terbaik</p>
                     <div class="inline-flex items-center gap-2 text-sm">

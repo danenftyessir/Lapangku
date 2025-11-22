@@ -174,35 +174,40 @@ class DashboardController extends Controller
             'shortlisted' => $shortlistedData,
         ];
     }
-
-    /**
+    
+/**
      * get jobs by category data untuk bar chart
+     * PERBAIKAN: Menggunakan Collection processing untuk menghindari error Group By JSON di Postgres
      */
     private function getJobsCategoryData($institutionId)
     {
-        // TODO: tambahkan kolom 'category' pada table problems jika belum ada
-        // untuk sementara gunakan hardcoded categories atau data dari field lain
-
-        // ambil problems dengan group by category
-        $problems = Problem::where('institution_id', $institutionId)
-                        ->selectRaw('sdg_categories as category, COUNT(*) as count')
+        // 1. Ambil hanya kolom sdg_categories dari database (lebih ringan)
+        $categories = Problem::where('institution_id', $institutionId)
                         ->whereNotNull('sdg_categories')
-                        ->groupBy('sdg_categories')
-                        ->orderByDesc('count')
-                        ->limit(5)
-                        ->get();
+                        ->pluck('sdg_categories');
 
-        if ($problems->isEmpty()) {
-            // fallback jika tidak ada data category
+        // 2. Proses menggunakan Collection Laravel
+        $stats = $categories->flatten() // Menggabungkan semua array (misal: [[1,2], [3]] menjadi [1, 2, 3])
+            ->countBy(function ($sdgId) {
+                // Ubah angka ID menjadi Nama Label SDG
+                // Kita gunakan helper sdg_label() yang sudah ada di aplikasi Anda
+                return function_exists('sdg_label') ? sdg_label($sdgId) : "SDG $sdgId";
+            })
+            ->sortDesc() // Urutkan dari jumlah terbanyak
+            ->take(5);   // Ambil 5 besar
+
+        // 3. Jika data kosong, return default
+        if ($stats->isEmpty()) {
             return [
-                'labels' => ['Engineering', 'Marketing', 'Design', 'HR', 'Sales'],
-                'values' => [0, 0, 0, 0, 0],
+                'labels' => ['No Data'],
+                'values' => [0],
             ];
         }
 
+        // 4. Return format yang sesuai untuk Chart.js
         return [
-            'labels' => $problems->pluck('category')->toArray(),
-            'values' => $problems->pluck('count')->toArray(),
+            'labels' => $stats->keys()->toArray(),
+            'values' => $stats->values()->toArray(),
         ];
     }
 

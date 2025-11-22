@@ -6,7 +6,7 @@
             {{-- logo --}}
             <div class="flex-shrink-0 flex items-center">
                 <a href="{{ route('home') }}" class="flex items-center group">
-                    <img src="{{ asset('karsa-logo.png') }}" alt="Karsa - Karya Anak Bangsa" class="h-10 w-auto transition-transform duration-300 group-hover:scale-110">
+                    <img src="{{ asset('karsa-logo.png') }}" alt="Karsa - Karya Untuk Bangsa" class="h-10 w-auto transition-transform duration-300 group-hover:scale-110">
                 </a>
             </div>
 

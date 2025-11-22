@@ -400,7 +400,7 @@
                         Tetaplah bergerak dan berdampak walau Anda berbeda, karena Tuhan tidak menciptakan dunia untuk satu jenis makhluknya saja.
                     </blockquote>
                 </div>
-                <p class="text-lg text-gray-500 italic mt-6">Karsa - Karya Anak Bangsa</p>
+                <p class="text-lg text-gray-500 italic mt-6">Karsa - Karya Untuk Bangsa</p>
             </div>
         </div>
     </div>

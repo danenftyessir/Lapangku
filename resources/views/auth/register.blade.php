@@ -28,7 +28,7 @@
             <!-- logo -->
             <div class="flex justify-center mb-8 mt-12">
                 <img src="{{ asset('karsa-logo.png') }}"
-                     alt="Karsa - Karya Anak Bangsa"
+                     alt="Karsa - Karya Untuk Bangsa"
                      class="h-24 w-auto transform hover:scale-105 transition-transform">
             </div>
 

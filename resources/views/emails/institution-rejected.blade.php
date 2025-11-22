@@ -208,7 +208,7 @@
             <p class="greeting">Yth. {{ $institution->name }},</p>
 
             <p class="message">
-                Terima kasih telah melakukan pendaftaran di <strong>Karsa - Karya Anak Bangsa</strong>.
+                Terima kasih telah melakukan pendaftaran di <strong>Karsa - Karya Untuk Bangsa</strong>.
                 Setelah melalui proses validasi AI yang komprehensif, kami perlu memberitahukan bahwa
                 <strong>dokumen verifikasi Anda belum memenuhi standar yang diperlukan</strong> untuk dapat disetujui secara otomatis.
             </p>
@@ -319,7 +319,7 @@
 
         <!-- Footer -->
         <div class="footer">
-            <p><strong>Karsa - Karya Anak Bangsa</strong></p>
+            <p><strong>Karsa - Karya Untuk Bangsa</strong></p>
             <p>Platform Kolaborasi KKN Digital</p>
             <p style="margin-top: 15px;">
                 <a href="{{ route('home') }}">Website</a> |

@@ -327,7 +327,7 @@
                 {{-- logo & header --}}
                 <div class="text-center mb-8">
                     <img src="{{ asset('karsa-logo.png') }}"
-                         alt="Karsa - Karya Anak Bangsa"
+                         alt="Karsa - Karya Untuk Bangsa"
                          class="h-20 w-auto mx-auto mb-4">
                     <h1 class="text-3xl font-bold text-gray-900 mb-2">Daftar Sebagai Mahasiswa</h1>
                     <p class="text-gray-600">Bergabunglah Dengan Platform KKN Terbesar Di Indonesia</p>

@@ -225,7 +225,7 @@
         <div class="header">
             <div class="icon">🎉</div>
             <h1>Selamat Datang di Karsa!</h1>
-            <p>Karya Anak Bangsa</p>
+            <p>Karya Untuk Bangsa</p>
         </div>
 
         <!-- Content -->
@@ -341,7 +341,7 @@
 
         <!-- Footer -->
         <div class="footer">
-            <p><strong>Karsa - Karya Anak Bangsa</strong></p>
+            <p><strong>Karsa - Karya Untuk Bangsa</strong></p>
             <p>Platform Digital untuk Kuliah Kerja Nyata Berkelanjutan</p>
             <p style="margin-top: 15px;">
                 <a href="{{ route('home') }}">Website</a> |

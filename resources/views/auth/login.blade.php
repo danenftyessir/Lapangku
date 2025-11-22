@@ -78,7 +78,7 @@
                 <!-- logo -->
                 <div class="flex justify-center mb-8 mt-8">
                     <img src="{{ asset('karsa-logo.png') }}"
-                         alt="Karsa - Karya Anak Bangsa"
+                         alt="Karsa - Karya Untuk Bangsa"
                          class="h-20 w-auto">
                 </div>
                 

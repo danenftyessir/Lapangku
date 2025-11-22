@@ -229,7 +229,7 @@
             </div>
 
             <p class="message">
-                Terima kasih telah bergabung dengan <strong>Karsa - Karya Anak Bangsa</strong>.
+                Terima kasih telah bergabung dengan <strong>Karsa - Karya Untuk Bangsa</strong>.
                 Kami berkomitmen untuk memfasilitasi kolaborasi yang produktif antara instansi dan mahasiswa KKN.
             </p>
 
@@ -240,7 +240,7 @@
 
         <!-- Footer -->
         <div class="footer">
-            <p><strong>Karsa - Karya Anak Bangsa</strong></p>
+            <p><strong>Karsa - Karya Untuk Bangsa</strong></p>
             <p>Platform Kolaborasi KKN Digital</p>
             <p style="margin-top: 15px;">
                 <a href="{{ route('home') }}">Website</a> |
