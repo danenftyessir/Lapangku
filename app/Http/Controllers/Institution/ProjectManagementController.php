@@ -421,7 +421,7 @@ class ProjectManagementController extends Controller
         ]);
 
         $report->update([
-            'status' => 'revision_required',
+            'status' => 'revision_needed',
             'institution_feedback' => $validated['feedback'],
             'reviewed_at' => now(),
         ]);
