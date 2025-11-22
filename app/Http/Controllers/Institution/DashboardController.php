@@ -61,13 +61,50 @@ class DashboardController extends Controller
         // jobs by category data untuk bar chart
         $jobsCategoryData = $this->getJobsCategoryData($institution->id);
 
+        // urgent items untuk alert
+        $urgentItems = [
+            'pending_applications' => $stats['applications']['pending'],
+            'pending_reviews' => 0, // akan dihitung dari pending reviews
+            'overdue_milestones' => 0, // TODO: implementasi milestone tracking
+        ];
+
+        // active projects
+        $activeProjects = Project::where('institution_id', $institution->id)
+                                ->where('status', 'active')
+                                ->with(['student.user'])
+                                ->limit(5)
+                                ->get();
+
+        // pending reviews - proyek completed yang belum di-review
+        $pendingReviews = Project::where('institution_id', $institution->id)
+                                ->where('status', 'completed')
+                                ->whereNotNull('actual_end_date')
+                                ->whereNull('reviewed_at')
+                                ->with(['student.user'])
+                                ->limit(5)
+                                ->get();
+
+        // update urgent items dengan pending reviews count
+        $urgentItems['pending_reviews'] = $pendingReviews->count();
+
+        // recent problems
+        $recentProblems = Problem::where('institution_id', $institution->id)
+                                ->withCount('applications')
+                                ->latest()
+                                ->limit(5)
+                                ->get();
+
         return view('institution.dashboard.index', compact(
             'stats',
             'recentApplications',
             'aiRecommendations',
             'timeSeriesData',
             'jobsCategoryData',
-            'institution'
+            'institution',
+            'urgentItems',
+            'activeProjects',
+            'pendingReviews',
+            'recentProblems'
         ));
     }
 
@@ -174,40 +211,46 @@ class DashboardController extends Controller
             'shortlisted' => $shortlistedData,
         ];
     }
-    
-/**
+
+    /**
      * get jobs by category data untuk bar chart
-     * PERBAIKAN: Menggunakan Collection processing untuk menghindari error Group By JSON di Postgres
      */
     private function getJobsCategoryData($institutionId)
     {
-        // 1. Ambil hanya kolom sdg_categories dari database (lebih ringan)
-        $categories = Problem::where('institution_id', $institutionId)
+        // TODO: tambahkan kolom 'category' pada table problems jika belum ada
+        // untuk sementara gunakan hardcoded categories atau data dari field lain
+
+        // ambil problems dengan group by category
+        // FIX: gunakan json_array_elements_text untuk unnest array JSON di Postgres
+        // karena tidak bisa group by column JSON secara langsung
+        $problems = Problem::where('institution_id', $institutionId)
+                        ->selectRaw('json_array_elements_text(sdg_categories) as category, COUNT(*) as count')
                         ->whereNotNull('sdg_categories')
-                        ->pluck('sdg_categories');
+                        ->groupBy('category')
+                        ->orderByDesc('count')
+                        ->limit(5)
+                        ->get();
 
-        // 2. Proses menggunakan Collection Laravel
-        $stats = $categories->flatten() // Menggabungkan semua array (misal: [[1,2], [3]] menjadi [1, 2, 3])
-            ->countBy(function ($sdgId) {
-                // Ubah angka ID menjadi Nama Label SDG
-                // Kita gunakan helper sdg_label() yang sudah ada di aplikasi Anda
-                return function_exists('sdg_label') ? sdg_label($sdgId) : "SDG $sdgId";
-            })
-            ->sortDesc() // Urutkan dari jumlah terbanyak
-            ->take(5);   // Ambil 5 besar
-
-        // 3. Jika data kosong, return default
-        if ($stats->isEmpty()) {
+        if ($problems->isEmpty()) {
+            // fallback jika tidak ada data category
             return [
-                'labels' => ['No Data'],
-                'values' => [0],
+                'labels' => ['Engineering', 'Marketing', 'Design', 'HR', 'Sales'],
+                'values' => [0, 0, 0, 0, 0],
             ];
         }
 
-        // 4. Return format yang sesuai untuk Chart.js
+        // map category ID ke label SDG
+        $labels = $problems->map(function($item) {
+            // pastikan sdg_label helper tersedia
+            if (function_exists('sdg_label')) {
+                return sdg_label($item->category);
+            }
+            return 'SDG ' . $item->category;
+        })->toArray();
+
         return [
-            'labels' => $stats->keys()->toArray(),
-            'values' => $stats->values()->toArray(),
+            'labels' => $labels,
+            'values' => $problems->pluck('count')->toArray(),
         ];
     }
 
