@@ -163,6 +163,11 @@ class TalentController extends Controller
         $user = Auth::user();
         $company = $user->company;
 
+        if (!$company) {
+            return redirect()->route('home')
+                ->with('error', 'profil perusahaan tidak ditemukan');
+        }
+
         // IMPLEMENTED: Ambil data saved talents dari Supabase
         $savedTalents = SavedTalent::where('company_id', $company->id)
             ->with('user.student')
@@ -274,6 +279,11 @@ class TalentController extends Controller
     {
         $user = Auth::user();
         $company = $user->company;
+
+        if (!$company) {
+            return redirect()->route('home')
+                ->with('error', 'profil perusahaan tidak ditemukan');
+        }
 
         // IMPLEMENTED: Ambil data leaderboard talents dari Supabase
         // Sorted by impact score or contribution metrics

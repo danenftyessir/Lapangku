@@ -23,6 +23,11 @@ class DashboardController extends Controller
         $user = Auth::user();
         $company = $user->company;
 
+        if (!$company) {
+            return redirect()->route('home')
+                ->with('error', 'profil perusahaan tidak ditemukan');
+        }
+
         // IMPLEMENTED: Ambil statistik dari Supabase
         $totalJobs = $company->jobPostings()->count();
         $activeJobs = $company->jobPostings()->active()->count();

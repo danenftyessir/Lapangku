@@ -34,6 +34,11 @@ class JobApplicationController extends Controller
         $user = Auth::user();
         $company = $user->company;
 
+        if (!$company) {
+            return redirect()->route('home')
+                ->with('error', 'profil perusahaan tidak ditemukan');
+        }
+
         // IMPLEMENTED: Ambil data applications dari Supabase
         $jobPostingId = $request->get('job_posting_id');
         $status = $request->get('status');

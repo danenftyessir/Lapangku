@@ -33,6 +33,11 @@ class ProfileController extends Controller
         $user = Auth::user();
         $company = $user->company()->with('province')->first();
 
+        if (!$company) {
+            return redirect()->route('home')
+                ->with('error', 'profil perusahaan tidak ditemukan');
+        }
+
         // Statistics
         $stats = [
             'total_jobs' => $company->jobPostings()->count(),
