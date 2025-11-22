@@ -149,27 +149,6 @@
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 sticky top-24">
                     <h2 class="text-lg font-bold text-gray-900 mb-4">Filter</h2>
 
-                    {{-- skills filter --}}
-                    <div class="mb-6" x-data="{ open: true }">
-                        <button @click="open = !open" class="flex items-center justify-between w-full text-left">
-                            <span class="font-semibold text-gray-800">Keahlian</span>
-                            <svg :class="{ 'rotate-180': open }" class="w-4 h-4 text-gray-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </button>
-                        <div x-show="open" x-collapse class="mt-3 space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
-                            @foreach($availableSkills as $skill)
-                            <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors">
-                                <input type="checkbox"
-                                       x-model="filters.skills"
-                                       value="{{ $skill }}"
-                                       class="w-4 h-4 text-violet-600 border-gray-300 rounded focus:ring-violet-500">
-                                <span class="text-sm text-gray-700">{{ $skill }}</span>
-                            </label>
-                            @endforeach
-                        </div>
-                    </div>
-
                     {{-- SDG alignment filter --}}
                     <div class="mb-6" x-data="{ open: true }">
                         <button @click="open = !open" class="flex items-center justify-between w-full text-left">
@@ -277,14 +256,6 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                             </svg>
                             List
-                        </button>
-                        <button @click="viewMode = 'leaderboard'"
-                                :class="viewMode === 'leaderboard' ? 'bg-violet-600 text-white' : 'text-gray-600 hover:bg-gray-100'"
-                                class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                            </svg>
-                            Leaderboard
                         </button>
                     </div>
                 </div>
@@ -412,20 +383,20 @@
                     </template>
                 </div>
 
-                {{-- load more button --}}
-                <div x-show="filteredTalents.length > 0 && hasMore" class="text-center mt-8">
-                    <button @click="loadMore()"
-                            :disabled="loading"
-                            class="px-6 py-3 bg-white border border-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span x-show="!loading">Muat Lebih Banyak</span>
-                        <span x-show="loading" class="flex items-center gap-2">
-                            <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            Memuat...
-                        </span>
-                    </button>
+                {{-- pagination controls --}}
+                <div x-show="filteredTalents.length > 0" class="flex items-center justify-between mt-8 bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                    <div class="text-sm text-gray-600">
+                        Menampilkan <span class="font-semibold" x-text="Math.min(perPage, filteredTalents.length)"></span> dari <span class="font-semibold" x-text="filteredTalents.length"></span> talenta
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <label class="text-sm text-gray-600">Tampilkan per halaman:</label>
+                        <select x-model="perPage" @change="perPageChanged()"
+                                class="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent">
+                            <option value="4">4</option>
+                            <option value="8">8</option>
+                            <option value="12">12</option>
+                        </select>
+                    </div>
                 </div>
 
                 {{-- list view --}}
@@ -470,64 +441,6 @@
                             </div>
                         </div>
                     </template>
-                </div>
-
-                {{-- leaderboard view --}}
-                <div x-show="viewMode === 'leaderboard' && filteredTalents.length > 0" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                    <table class="w-full">
-                        <thead class="bg-gray-50 border-b border-gray-100">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Peringkat</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Talenta</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Keahlian</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Lokasi</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            <template x-for="(talent, index) in filteredTalents" :key="talent.id">
-                                <tr class="hover:bg-gray-50 transition-colors">
-                                    <td class="px-4 py-3">
-                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold"
-                                              :class="{
-                                                  'bg-amber-100 text-amber-700': index === 0,
-                                                  'bg-gray-200 text-gray-700': index === 1,
-                                                  'bg-orange-100 text-orange-700': index === 2,
-                                                  'bg-gray-100 text-gray-600': index > 2
-                                              }"
-                                              x-text="index + 1">
-                                        </span>
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <div class="flex items-center gap-3">
-                                            <img :src="'/'+talent.avatar"
-                                                 :alt="talent.name"
-                                                 class="w-10 h-10 rounded-full object-cover"
-                                                 onerror="this.src='https://ui-avatars.com/api/?name='+encodeURIComponent(this.alt)+'&background=6366F1&color=fff'">
-                                            <div>
-                                                <p class="font-semibold text-gray-900 text-sm" x-text="talent.name"></p>
-                                                <p class="text-xs text-gray-500" x-text="talent.title"></p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <div class="flex flex-wrap gap-1">
-                                            <template x-for="skill in talent.skills.slice(0, 3)" :key="skill">
-                                                <span class="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded-full" x-text="skill"></span>
-                                            </template>
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-3 text-sm text-gray-600" x-text="talent.location"></td>
-                                    <td class="px-4 py-3">
-                                        <a :href="'/profile/' + talent.username"
-                                           class="text-violet-600 hover:text-violet-700 text-sm font-semibold">
-                                            Lihat Profil
-                                        </a>
-                                    </td>
-                                </tr>
-                            </template>
-                        </tbody>
-                    </table>
                 </div>
 
             </main>
@@ -622,6 +535,7 @@ function talentBrowser() {
         comparisonMode: false,
         selectedForComparison: [],
         loading: false,
+        perPage: 12,
         hasMore: {{ $talents->hasMorePages() ? 'true' : 'false' }},
         currentPage: {{ $talents->currentPage() }},
 
@@ -671,7 +585,8 @@ function talentBrowser() {
                 result = result.filter(talent => talent.verified);
             }
 
-            return result;
+            // Apply pagination - slice to show only perPage items
+            return result.slice(0, parseInt(this.perPage));
         },
 
         applyFilters() {
@@ -798,7 +713,13 @@ function talentBrowser() {
             return this.savedTalents.includes(talentId);
         },
 
-        // Load More functionality
+        // Pagination handler
+        perPageChanged() {
+            console.log('Per page changed to:', this.perPage);
+            window.showNotification(`Menampilkan ${this.perPage} talenta per halaman`, 'info');
+        },
+
+        // Load More functionality (kept for compatibility if needed later)
         async loadMore() {
             if (this.loading || !this.hasMore) return;
 

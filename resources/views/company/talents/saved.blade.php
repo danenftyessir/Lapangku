@@ -47,21 +47,37 @@
 
     /* folder sidebar */
     .folder-item {
-        transition: background-color 0.15s ease-out, transform 0.1s ease-out;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        border-left: 3px solid transparent;
     }
 
     .folder-item:hover {
-        background-color: rgba(59, 130, 246, 0.05);
+        background-color: rgba(139, 92, 246, 0.08);
+        transform: translateX(2px);
     }
 
     .folder-item.active {
-        background-color: rgba(59, 130, 246, 0.1);
-        border-left: 3px solid #3b82f6;
+        background-color: rgba(139, 92, 246, 0.12);
+        border-left-color: #8b5cf6;
+        font-weight: 500;
+    }
+
+    .folder-item.active::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 60%;
+        background: linear-gradient(to bottom, transparent, #8b5cf6, transparent);
     }
 
     .folder-item.drag-over {
-        background-color: rgba(59, 130, 246, 0.15);
-        border: 2px dashed #3b82f6;
+        background-color: rgba(139, 92, 246, 0.15);
+        border: 2px dashed #8b5cf6;
+        border-radius: 8px;
     }
 
     /* status badge colors */
@@ -225,37 +241,50 @@
 
             <!-- folder sidebar -->
             <div class="w-64 flex-shrink-0">
-                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden sticky top-6">
-                    <div class="px-4 py-3 border-b border-gray-200">
-                        <h3 class="font-semibold text-gray-900">Folder</h3>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden sticky top-6">
+                    <div class="px-4 py-3 bg-gradient-to-r from-violet-50 to-purple-50 border-b border-gray-200">
+                        <h3 class="font-semibold text-gray-900 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                            </svg>
+                            Folder
+                        </h3>
                     </div>
                     <div class="p-2">
                         <!-- all talents -->
                         <button @click="selectFolder(null)"
-                                class="folder-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left"
+                                class="folder-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left"
                                 :class="{'active': selectedFolder === null}">
-                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 transition-colors"
+                                 :class="selectedFolder === null ? 'text-violet-600' : 'text-gray-400'"
+                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                             </svg>
-                            <span class="text-sm font-medium text-gray-700">Semua Talent</span>
-                            <span class="ml-auto text-xs text-gray-400" x-text="totalTalents"></span>
+                            <span class="text-sm text-gray-700 flex-1">Semua Talent</span>
+                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full"
+                                  :class="selectedFolder === null ? 'bg-violet-100 text-violet-700' : 'bg-gray-100 text-gray-500'"
+                                  x-text="totalTalents"></span>
                         </button>
 
                         <!-- folder list -->
                         <template x-for="folder in folders" :key="folder.id">
-                            <div class="folder-item w-full flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer group"
+                            <div class="folder-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer group"
                                  :class="{'active': selectedFolder === folder.id, 'drag-over': dragOverFolder === folder.id}"
                                  @click="selectFolder(folder.id)"
                                  @dragover.prevent="dragOverFolder = folder.id"
                                  @dragleave="dragOverFolder = null"
                                  @drop="dropToFolder($event, folder.id)">
-                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 transition-colors"
+                                     :class="selectedFolder === folder.id ? 'text-violet-600' : 'text-gray-400'"
+                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
                                 </svg>
-                                <span class="text-sm font-medium text-gray-700 truncate" x-text="folder.name"></span>
-                                <span class="ml-auto text-xs text-gray-400" x-text="getFolderCount(folder.id)"></span>
+                                <span class="text-sm text-gray-700 truncate flex-1" x-text="folder.name"></span>
+                                <span class="text-xs font-semibold px-2 py-0.5 rounded-full"
+                                      :class="selectedFolder === folder.id ? 'bg-violet-100 text-violet-700' : 'bg-gray-100 text-gray-500'"
+                                      x-text="getFolderCount(folder.id)"></span>
                                 <button @click.stop="openEditFolderModal(folder)"
-                                        class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-gray-600">
+                                        class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-violet-600 transition-all p-1 hover:bg-violet-50 rounded">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
                                     </svg>
@@ -508,10 +537,10 @@
                                     <option :value="folder.id" x-text="folder.name"></option>
                                 </template>
                             </select>
-                            <button @click="saveFolder()"
+                            <button @click="saveTalentFolder()"
                                     :disabled="isLoading"
                                     class="w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50">
-                                <span x-show="!isLoading">Simpan Folder</span>
+                                <span x-show="!isLoading">Simpan</span>
                                 <span x-show="isLoading">Menyimpan...</span>
                             </button>
                         </div>
@@ -592,7 +621,7 @@
                                 Hapus
                             </button>
                         </template>
-                        <button @click="saveFolder()"
+                        <button @click="saveFolderModal()"
                                 :disabled="!folderName.trim()"
                                 class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50">
                             Simpan
@@ -896,6 +925,26 @@ function savedTalentsPage() {
                 this.showToast('Catatan berhasil disimpan');
             } catch (error) {
                 this.showToast('Gagal menyimpan catatan', 'error');
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        async saveTalentFolder() {
+            if (!this.selectedTalent) return;
+            this.isLoading = true;
+
+            try {
+                const oldFolder = this.selectedTalent.folder_id;
+                this.selectedTalent.folder_id = this.tempFolder || null;
+
+                await this.updateTalentFolder(this.selectedTalent.id, this.tempFolder);
+
+                this.quickActionsOpen = false;
+                this.showToast('Talent berhasil dipindahkan ke folder');
+            } catch (error) {
+                this.selectedTalent.folder_id = oldFolder;
+                this.showToast('Gagal memindahkan talent', 'error');
             } finally {
                 this.isLoading = false;
             }
