@@ -95,11 +95,11 @@ class DashboardController extends Controller
         // IMPLEMENTED: AI talent recommendations dari Supabase
         // Ambil users dengan impact score tertinggi yang belum diapply
         $talentRecommendations = User::where('user_type', 'student')
-            ->whereHas('profile')
+            ->whereHas('student')
             ->whereDoesntHave('jobApplications', function ($query) use ($company) {
                 $query->whereIn('job_posting_id', $company->jobPostings()->pluck('id'));
             })
-            ->with('profile')
+            ->with('student')
             ->orderBy('id', 'desc')
             ->limit(5)
             ->get()
@@ -107,8 +107,8 @@ class DashboardController extends Controller
                 return [
                     'id' => $user->id,
                     'name' => $user->name,
-                    'expertise' => $user->profile->headline ?? 'No expertise specified',
-                    'avatar' => $user->avatar ?? 'default-avatar.jpg',
+                    'expertise' => $user->student->major ?? 'No major specified',
+                    'avatar' => $user->student->profile_photo_path ?? 'default-avatar.jpg',
                     'online' => true, // Could be implemented with last_seen_at
                 ];
             });
