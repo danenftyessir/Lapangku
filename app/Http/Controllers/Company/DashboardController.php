@@ -33,12 +33,12 @@ class DashboardController extends Controller
 
         // Shortlisted candidates
         $shortlistedCount = $company->jobApplications()
-            ->where('status', JobApplication::STATUS_SHORTLISTED)
+            ->where('job_applications.status', JobApplication::STATUS_SHORTLISTED)
             ->count();
 
         // Total hires
         $hiresCount = $company->jobApplications()
-            ->where('status', JobApplication::STATUS_HIRED)
+            ->where('job_applications.status', JobApplication::STATUS_HIRED)
             ->count();
 
         // Calculate growth percentages (comparing last 30 days vs previous 30 days)
@@ -155,7 +155,7 @@ class DashboardController extends Controller
 
             foreach (['new', 'reviewing', 'shortlisted'] as $status) {
                 $count = $company->jobApplications()
-                    ->where('status', $status)
+                    ->where('job_applications.status', $status)
                     ->whereBetween('job_applications.created_at', [$startOfMonth, $endOfMonth])
                     ->count();
 

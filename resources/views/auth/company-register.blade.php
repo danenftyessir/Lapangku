@@ -893,14 +893,15 @@
             }
         }
 
-        // Handle form submission
+        // Handle form submission with AJAX
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.querySelector('form');
             const validationAlert = document.getElementById('validation-alert');
-            let submissionTimeout = null;
 
             if (form) {
                 form.addEventListener('submit', function(e) {
+                    e.preventDefault(); // Always prevent default, we'll use AJAX
+
                     // Hide validation alert first
                     if (validationAlert) {
                         validationAlert.classList.add('hidden');
@@ -926,8 +927,6 @@
                     });
 
                     if (hasInvalidFields) {
-                        e.preventDefault();
-
                         // Show validation alert
                         if (validationAlert) {
                             validationAlert.classList.remove('hidden');
@@ -941,20 +940,8 @@
                         return false;
                     }
 
-                    // Form is valid, proceed with submission
-                    const submitBtn = form.querySelector('button[type="submit"]');
-                    if (submitBtn) {
-                        submitBtn.disabled = true;
-                    }
-
-                    // Set timeout untuk mencegah stuck loading
-                    // Jika setelah 30 detik tidak ada response, tampilkan pesan error
-                    submissionTimeout = setTimeout(function() {
-                        alert('Pendaftaran memakan waktu lebih lama dari biasanya. Silakan cek email Anda atau coba login jika pendaftaran berhasil.');
-                        if (submitBtn) {
-                            submitBtn.disabled = false;
-                        }
-                    }, 30000); // 30 detik
+                    // Form is valid, submit via AJAX
+                    submitFormViaAjax();
                 });
 
                 // Remove error styling when user starts typing
@@ -970,12 +957,120 @@
                 });
             }
 
-            // Clear timeout jika halaman unload (form berhasil submit)
-            window.addEventListener('beforeunload', function() {
-                if (submissionTimeout) {
-                    clearTimeout(submissionTimeout);
+            function submitFormViaAjax() {
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const formData = new FormData(form);
+
+                // Disable submit button and show loading
+                if (submitBtn) {
+                    submitBtn.disabled = true;
                 }
-            });
+
+                // Get Alpine.js component to trigger loading state
+                const alpineComponent = form.__x;
+                if (alpineComponent && alpineComponent.$data) {
+                    alpineComponent.$data.isSubmitting = true;
+                }
+
+                // Create abort controller for timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 seconds timeout
+
+                // Submit form via fetch API
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    signal: controller.signal
+                })
+                .then(response => {
+                    clearTimeout(timeoutId); // Clear timeout on successful response
+
+                    // Check if response is JSON
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        return response.json().then(data => ({ data, status: response.status }));
+                    } else {
+                        // If not JSON, might be a redirect or HTML
+                        // Consider it as success and redirect to home
+                        window.location.href = '{{ route("home") }}';
+                        return null;
+                    }
+                })
+                .then(result => {
+                    if (!result) return; // Already redirected
+
+                    const { data, status } = result;
+
+                    if (status >= 200 && status < 300) {
+                        // Success
+                        console.log('Registration successful:', data);
+
+                        // Show success message if available
+                        if (data.message) {
+                            alert(data.message);
+                        }
+
+                        // Redirect to the URL provided in response
+                        if (data.data && data.data.redirect_url) {
+                            window.location.href = data.data.redirect_url;
+                        } else if (data.redirect_url) {
+                            window.location.href = data.redirect_url;
+                        } else {
+                            // Default redirect to home
+                            window.location.href = '{{ route("home") }}';
+                        }
+                    } else {
+                        // Error response
+                        handleErrorResponse(data, submitBtn, alpineComponent);
+                    }
+                })
+                .catch(error => {
+                    clearTimeout(timeoutId); // Clear timeout on error
+                    console.error('Registration error:', error);
+
+                    // Re-enable submit button
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                    }
+                    if (alpineComponent && alpineComponent.$data) {
+                        alpineComponent.$data.isSubmitting = false;
+                    }
+
+                    // Show appropriate error message
+                    let errorMessage = 'Terjadi kesalahan saat registrasi. Silakan coba lagi.';
+                    if (error.name === 'AbortError') {
+                        errorMessage = 'Request timeout. Data mungkin sudah tersimpan. Silakan cek email Anda atau coba login.';
+                    }
+                    alert(errorMessage);
+                });
+            }
+
+            function handleErrorResponse(data, submitBtn, alpineComponent) {
+                // Re-enable submit button
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                }
+                if (alpineComponent && alpineComponent.$data) {
+                    alpineComponent.$data.isSubmitting = false;
+                }
+
+                // Show error message
+                let errorMessage = 'Terjadi kesalahan saat registrasi. Silakan coba lagi.';
+                if (data.message) {
+                    errorMessage = data.message;
+                } else if (data.error) {
+                    errorMessage = data.error;
+                }
+
+                alert(errorMessage);
+
+                // Scroll to top to show error
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         });
     </script>
 

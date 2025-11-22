@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS job_postings (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
-);
+) WITHOUT OIDS;
 
 -- Indexes untuk job_postings
 CREATE INDEX idx_job_postings_company_id ON job_postings(company_id);
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS job_applications (
     rejection_reason TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+) WITHOUT OIDS;
 
 -- Indexes untuk job_applications
 CREATE INDEX idx_job_applications_job_posting_id ON job_applications(job_posting_id);
@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS saved_talents (
     saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+) WITHOUT OIDS;
 
 -- Indexes untuk saved_talents
 CREATE INDEX idx_saved_talents_company_id ON saved_talents(company_id);
@@ -214,96 +214,19 @@ ON CONFLICT (slug) DO NOTHING;
 -- ============================================================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
 -- ============================================================================
-
--- Enable RLS on all tables
-ALTER TABLE job_categories ENABLE ROW LEVEL SECURITY;
-ALTER TABLE job_postings ENABLE ROW LEVEL SECURITY;
-ALTER TABLE job_applications ENABLE ROW LEVEL SECURITY;
-ALTER TABLE saved_talents ENABLE ROW LEVEL SECURITY;
-ALTER TABLE job_posting_skills ENABLE ROW LEVEL SECURITY;
-
--- Policy: Everyone can read job categories
-CREATE POLICY "job_categories_select_policy" ON job_categories
-FOR SELECT USING (true);
-
--- Policy: Companies can only read their own job postings
-CREATE POLICY "job_postings_select_policy" ON job_postings
-FOR SELECT USING (
-    company_id IN (
-        SELECT id FROM companies WHERE user_id = auth.uid()
-    )
-);
-
--- Policy: Companies can insert their own job postings
-CREATE POLICY "job_postings_insert_policy" ON job_postings
-FOR INSERT WITH CHECK (
-    company_id IN (
-        SELECT id FROM companies WHERE user_id = auth.uid()
-    )
-);
-
--- Policy: Companies can update their own job postings
-CREATE POLICY "job_postings_update_policy" ON job_postings
-FOR UPDATE USING (
-    company_id IN (
-        SELECT id FROM companies WHERE user_id = auth.uid()
-    )
-);
-
--- Policy: Companies can delete their own job postings
-CREATE POLICY "job_postings_delete_policy" ON job_postings
-FOR DELETE USING (
-    company_id IN (
-        SELECT id FROM companies WHERE user_id = auth.uid()
-    )
-);
-
--- Policy: Companies can read applications for their job postings
-CREATE POLICY "job_applications_select_policy" ON job_applications
-FOR SELECT USING (
-    job_posting_id IN (
-        SELECT id FROM job_postings WHERE company_id IN (
-            SELECT id FROM companies WHERE user_id = auth.uid()
-        )
-    )
-    OR user_id = auth.uid() -- Users can read their own applications
-);
-
--- Policy: Users can insert their own applications
-CREATE POLICY "job_applications_insert_policy" ON job_applications
-FOR INSERT WITH CHECK (user_id = auth.uid());
-
--- Policy: Companies can update applications for their job postings
-CREATE POLICY "job_applications_update_policy" ON job_applications
-FOR UPDATE USING (
-    job_posting_id IN (
-        SELECT id FROM job_postings WHERE company_id IN (
-            SELECT id FROM companies WHERE user_id = auth.uid()
-        )
-    )
-);
-
--- Policy: Companies can read/write their own saved talents
-CREATE POLICY "saved_talents_select_policy" ON saved_talents
-FOR SELECT USING (
-    company_id IN (
-        SELECT id FROM companies WHERE user_id = auth.uid()
-    )
-);
-
-CREATE POLICY "saved_talents_insert_policy" ON saved_talents
-FOR INSERT WITH CHECK (
-    company_id IN (
-        SELECT id FROM companies WHERE user_id = auth.uid()
-    )
-);
-
-CREATE POLICY "saved_talents_delete_policy" ON saved_talents
-FOR DELETE USING (
-    company_id IN (
-        SELECT id FROM companies WHERE user_id = auth.uid()
-    )
-);
+-- CATATAN: RLS policies di-disable karena aplikasi menggunakan Laravel backend
+-- dengan authorization layer sendiri (Policies, Gates, Middleware).
+-- RLS tidak diperlukan karena semua akses database melalui Laravel, bukan direct client.
+--
+-- Jika ingin mengaktifkan RLS untuk direct client access di masa depan,
+-- uncomment code di bawah dan sesuaikan dengan auth system yang digunakan.
+--
+-- -- Enable RLS on all tables
+-- ALTER TABLE job_categories ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE job_postings ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE job_applications ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE saved_talents ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE job_posting_skills ENABLE ROW LEVEL SECURITY;
 
 -- ============================================================================
 -- NOTES
