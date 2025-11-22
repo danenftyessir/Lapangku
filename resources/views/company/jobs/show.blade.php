@@ -280,11 +280,13 @@
                         <div>
                             <h3 class="font-semibold text-gray-900 mb-3">What You'll Do:</h3>
                             <ul class="space-y-2">
-                                @foreach($jobPosting['responsibilities'] as $responsibility)
-                                    <li class="flex items-start gap-2 text-gray-600">
-                                        <span class="text-gray-400 mt-1.5">•</span>
-                                        <span>{{ $responsibility }}</span>
-                                    </li>
+                                @foreach(explode("\n", $jobPosting['responsibilities'] ?? '') as $responsibility)
+                                    @if(trim($responsibility))
+                                        <li class="flex items-start gap-2 text-gray-600">
+                                            <span class="text-gray-400 mt-1.5">•</span>
+                                            <span>{{ trim($responsibility) }}</span>
+                                        </li>
+                                    @endif
                                 @endforeach
                             </ul>
                         </div>

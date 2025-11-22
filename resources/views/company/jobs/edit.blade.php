@@ -6,16 +6,8 @@
 <div class="min-h-screen bg-gray-50" x-data="jobEditWizard()">
 
     {{-- hero section --}}
-    <div class="relative h-48 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-800 overflow-hidden">
-        {{-- decorative elements --}}
-        <div class="absolute inset-0">
-            <svg class="absolute right-0 top-0 h-full opacity-20" viewBox="0 0 400 400" fill="none">
-                <circle cx="300" cy="100" r="80" stroke="#22C55E" stroke-width="2"/>
-                <circle cx="350" cy="200" r="40" stroke="#22C55E" stroke-width="2"/>
-                <path d="M280 50 Q320 100 280 150" stroke="#22C55E" stroke-width="2" fill="none"/>
-                <path d="M320 80 Q360 130 320 180" stroke="#22C55E" stroke-width="2" fill="none"/>
-            </svg>
-        </div>
+    <div class="relative h-48 bg-cover bg-center" style="background-image: url('{{ asset('company3.jpg') }}');">
+        <div class="absolute inset-0 bg-black/50"></div>
         <div class="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4">
             <h1 class="text-2xl md:text-3xl font-bold mb-2 fade-in-up" style="font-family: 'Space Grotesk', sans-serif;">
                 Edit Lowongan Pekerjaan

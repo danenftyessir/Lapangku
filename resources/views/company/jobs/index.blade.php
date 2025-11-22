@@ -5,9 +5,8 @@
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
     <!-- Header Section -->
-    <div class="relative bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white py-16 overflow-hidden">
-        <div class="absolute inset-0 bg-black opacity-10"></div>
-        <div class="absolute inset-0 bg-[url('/images/pattern.svg')] opacity-5"></div>
+    <div class="relative bg-cover bg-center text-white py-16 overflow-hidden" style="background-image: url('{{ asset('company2.jpg') }}');">
+        <div class="absolute inset-0 bg-black/50"></div>
 
         <div class="container mx-auto px-6 relative z-10">
             <div class="flex justify-between items-center fade-in-up">

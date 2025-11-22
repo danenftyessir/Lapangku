@@ -64,7 +64,7 @@ class TalentController extends Controller
             $talentsQuery->whereNotNull('email_verified_at');
         }
 
-        $talents = $talentsQuery->with(['student.university'])
+        $talents = $talentsQuery->with(['student.university', 'student.projects.problem'])
             ->orderBy('created_at', 'desc')
             ->paginate(12);
 
@@ -72,14 +72,42 @@ class TalentController extends Controller
         $talents->getCollection()->transform(function ($talent) {
             $student = $talent->student;
 
-            // Get SDG alignment (dapat ditambahkan kolom di student table jika perlu)
+            // Get SDG alignment dari completed projects
             $sdgBadges = [];
-            // Contoh SDG default - nanti bisa diambil dari database
-            $defaultSdgs = [
-                ['id' => 4, 'name' => 'Quality Education', 'color' => 'blue'],
-                ['id' => 8, 'name' => 'Decent Work', 'color' => 'red'],
-            ];
-            $sdgBadges = $defaultSdgs;
+            if ($student && $student->projects) {
+                $sdgMap = [];
+                $colorMap = [
+                    1 => 'red', 2 => 'amber', 3 => 'green', 4 => 'blue', 5 => 'orange',
+                    6 => 'cyan', 7 => 'yellow', 8 => 'red', 9 => 'orange', 10 => 'pink',
+                    11 => 'amber', 12 => 'yellow', 13 => 'green', 16 => 'blue'
+                ];
+
+                $completedProjects = $student->projects->where('status', 'completed');
+                foreach ($completedProjects as $project) {
+                    if ($project->problem && $project->problem->sdg_categories) {
+                        $categories = $project->problem->sdg_categories;
+
+                        // Handle jika masih string JSON
+                        if (is_string($categories)) {
+                            $categories = json_decode($categories, true) ?? [];
+                        }
+
+                        if (is_array($categories)) {
+                            foreach ($categories as $sdgId) {
+                                if (!isset($sdgMap[$sdgId])) {
+                                    $sdgMap[$sdgId] = [
+                                        'id' => $sdgId,
+                                        'name' => $this->getSdgName($sdgId),
+                                        'color' => $colorMap[$sdgId] ?? 'blue'
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                }
+
+                $sdgBadges = array_values($sdgMap);
+            }
 
             // Get location from university or student data
             $location = 'Indonesia'; // Default location
@@ -303,7 +331,7 @@ class TalentController extends Controller
         // Sorted by impact score or contribution metrics
         $leaderboardTalents = User::where('user_type', 'student')
             ->whereHas('student')
-            ->with('student.university')
+            ->with('student.university', 'student.projects.problem')
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
@@ -317,12 +345,37 @@ class TalentController extends Controller
                 $location = $student->university->city ?? 'Indonesia';
             }
 
-            // Default SDG badges
-            $sdgBadge = [
-                'id' => 4,
-                'name' => 'Quality Education',
-                'color' => 'blue'
-            ];
+            // Get first SDG badge from completed projects
+            $sdgBadge = null;
+            if ($student && $student->projects) {
+                $colorMap = [
+                    1 => 'red', 2 => 'amber', 3 => 'green', 4 => 'blue', 5 => 'orange',
+                    6 => 'cyan', 7 => 'yellow', 8 => 'red', 9 => 'orange', 10 => 'pink',
+                    11 => 'amber', 12 => 'yellow', 13 => 'green', 16 => 'blue'
+                ];
+
+                $completedProjects = $student->projects->where('status', 'completed');
+                foreach ($completedProjects as $project) {
+                    if ($project->problem && $project->problem->sdg_categories) {
+                        $categories = $project->problem->sdg_categories;
+
+                        // Handle jika masih string JSON
+                        if (is_string($categories)) {
+                            $categories = json_decode($categories, true) ?? [];
+                        }
+
+                        if (is_array($categories) && !empty($categories)) {
+                            $firstSdgId = $categories[0];
+                            $sdgBadge = [
+                                'id' => $firstSdgId,
+                                'name' => $this->getSdgName($firstSdgId),
+                                'color' => $colorMap[$firstSdgId] ?? 'blue'
+                            ];
+                            break; // Use first SDG found
+                        }
+                    }
+                }
+            }
 
             return [
                 'id' => $talent->id,
@@ -524,5 +577,33 @@ class TalentController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Helper method untuk mendapatkan nama SDG berdasarkan ID
+     */
+    private function getSdgName($sdgId)
+    {
+        $sdgNames = [
+            1 => 'No Poverty',
+            2 => 'Zero Hunger',
+            3 => 'Good Health',
+            4 => 'Quality Education',
+            5 => 'Gender Equality',
+            6 => 'Clean Water',
+            7 => 'Clean Energy',
+            8 => 'Decent Work',
+            9 => 'Industry & Innovation',
+            10 => 'Reduced Inequalities',
+            11 => 'Sustainable Cities',
+            12 => 'Responsible Consumption',
+            13 => 'Climate Action',
+            14 => 'Life Below Water',
+            15 => 'Life On Land',
+            16 => 'Peace & Justice',
+            17 => 'Partnerships',
+        ];
+
+        return $sdgNames[$sdgId] ?? 'SDG ' . $sdgId;
     }
 }

@@ -263,7 +263,7 @@ class JobPostingController extends Controller
             ['id' => 17, 'name' => 'SDG 17: Partnerships For The Goals', 'color' => 'blue'],
         ];
 
-        $jobCategories = JobCategory::orderBy('name')->get();
+        $categories = JobCategory::orderBy('name')->get();
 
         return view('company.jobs.edit', compact(
             'company',
@@ -272,7 +272,7 @@ class JobPostingController extends Controller
             'jobTypes',
             'availableSkills',
             'sdgOptions',
-            'jobCategories'
+            'categories'
         ));
     }
 
