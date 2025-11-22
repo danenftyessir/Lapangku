@@ -313,7 +313,7 @@
 
                             {{-- header dengan avatar dan bookmark --}}
                             <div class="flex items-start justify-between mb-3">
-                                <a :href="'/company/talents/' + talent.id" class="flex items-center gap-3 flex-1 min-w-0 hover:opacity-80 transition-opacity">
+                                <a :href="'/profile/' + talent.username" class="flex items-center gap-3 flex-1 min-w-0 hover:opacity-80 transition-opacity">
                                     <div class="relative shrink-0">
                                         <img :src="'/'+talent.avatar"
                                              :alt="talent.name"
@@ -462,8 +462,7 @@
                                     <div class="text-right text-sm">
                                         <p class="text-gray-500" x-text="talent.location"></p>
                                     </div>
-                                    {{-- TO DO: implementasi route company.talents.show --}}
-                                    <a :href="'/company/talents/' + talent.id"
+                                    <a :href="'/profile/' + talent.username"
                                        class="px-4 py-2 bg-violet-600 text-white text-sm font-semibold rounded-lg hover:bg-violet-700 transition-colors">
                                         Lihat Profil
                                     </a>
@@ -520,8 +519,7 @@
                                     </td>
                                     <td class="px-4 py-3 text-sm text-gray-600" x-text="talent.location"></td>
                                     <td class="px-4 py-3">
-                                        {{-- TO DO: implementasi route company.talents.show --}}
-                                        <a :href="'/company/talents/' + talent.id"
+                                        <a :href="'/profile/' + talent.username"
                                            class="text-violet-600 hover:text-violet-700 text-sm font-semibold">
                                             Lihat Profil
                                         </a>
@@ -810,19 +808,24 @@ function talentBrowser() {
             try {
                 const response = await fetch(`{{ route('company.talents.index') }}?page=${nextPage}`, {
                     headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
                     }
                 });
 
-                const html = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
+                const data = await response.json();
 
-                // Extract talents data from response (this would need server-side JSON response)
-                // For now, just show a message
-                window.showNotification('Fitur load more memerlukan implementasi server-side', 'info');
+                if (data.talents && data.talents.length > 0) {
+                    // Append new talents to existing array
+                    this.talents = [...this.talents, ...data.talents];
+                    this.currentPage = nextPage;
+                    this.hasMore = data.hasMore;
 
-                this.hasMore = false; // Disable for now
+                    window.showNotification(`${data.talents.length} talenta berhasil dimuat`, 'success');
+                } else {
+                    this.hasMore = false;
+                    window.showNotification('Tidak ada talenta lagi', 'info');
+                }
             } catch (error) {
                 console.error('Error loading more:', error);
                 window.showNotification('Terjadi kesalahan saat memuat data', 'error');

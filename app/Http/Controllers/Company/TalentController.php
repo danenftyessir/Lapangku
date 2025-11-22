@@ -90,14 +90,18 @@ class TalentController extends Controller
 
             return [
                 'id' => $talent->id,
+                'username' => $talent->username,
                 'name' => $talent->name,
                 'title' => $student->major ?? 'No Major',
                 'avatar' => $student->profile_photo_path ?? 'default-avatar.jpg',
                 'verified' => !is_null($talent->email_verified_at),
                 'sdg_badges' => $sdgBadges,
                 'location' => $location,
+                'skills' => $student->skills ?? [],
                 'projects_completed' => 0, // Projects count if available
                 'success_rate' => 0, // Success rate if available
+                'algorithms_deployed' => 0, // Algorithms deployed if available
+                'impact_score' => 0, // Impact score if available
                 'online' => true, // Could be implemented with last_seen_at
             ];
         });
@@ -127,6 +131,16 @@ class TalentController extends Controller
 
         $totalTalents = $talents->total();
         $viewMode = $request->get('view', 'grid');
+
+        // Return JSON for AJAX requests (load more functionality)
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'talents' => $talents->items(),
+                'hasMore' => $talents->hasMorePages(),
+                'currentPage' => $talents->currentPage(),
+                'total' => $talents->total(),
+            ]);
+        }
 
         return view('company.talents.index', compact(
             'company',
@@ -312,10 +326,12 @@ class TalentController extends Controller
 
             return [
                 'id' => $talent->id,
+                'username' => $talent->username,
                 'rank' => ($request->input('page', 1) - 1) * 20 + $index + 1,
                 'name' => $talent->name,
                 'location' => $location,
                 'avatar' => $student->profile_photo_path ?? 'default-avatar.jpg',
+                'skills' => $student->skills ?? [],
                 'sdg_badge' => $sdgBadge,
             ];
         });

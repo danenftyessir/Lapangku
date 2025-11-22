@@ -431,7 +431,7 @@
 
                             <!-- action buttons -->
                             <div class="flex gap-2">
-                                <a :href="'/company/talents/' + talent.id"
+                                <a :href="'/profile/' + talent.username"
                                    class="flex-1 text-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                                     Lihat Profil
                                 </a>
@@ -523,7 +523,7 @@
                                     </td>
                                     <td class="px-4 py-4">
                                         <div class="flex items-center gap-2">
-                                            <a :href="'/company/talents/' + talent.id"
+                                            <a :href="'/profile/' + talent.username"
                                                class="text-sm font-medium text-primary-600 hover:text-primary-700">Profil</a>
                                             <button @click="toggleSaveTalent(talent)"
                                                     class="text-gray-400 hover:text-primary-600">
@@ -645,7 +645,7 @@
                             </div>
 
                             <div class="mt-4 pt-4 border-t border-gray-100">
-                                <a :href="'/company/talents/' + talent.id"
+                                <a :href="'/profile/' + talent.username"
                                    class="block w-full text-center px-4 py-2 bg-primary-600 text-white rounded-lg text-sm hover:bg-primary-700">
                                     Lihat Profil Lengkap
                                 </a>
